@@ -2,7 +2,7 @@
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
+import java.util.Iterator;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -11,32 +11,35 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SaxParserMain {
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+        
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
         WikiHandler wikiHandler = new WikiHandler();
-        saxParser.parse("frwiki10000.xml", wikiHandler);
+        saxParser.parse("frwiki-latest-pages-articles.xml", wikiHandler);
         System.out.println(wikiHandler.getWebsite().getPageList().size());
-        File file = new File("mywiki.xml");
-        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        BufferedWriter bw = new BufferedWriter(fw);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        for(int i=0; i<wikiHandler.getWebsite().getPageList().size();i++){
-            WikiPage b=wikiHandler.getWebsite().getPageList().get(i);
-            bw.write("<title>" + b.title + "</title> \n");
-            bw.write("<text>" + b.text + "</text> \n");
-        }
+        // File file = new File("mywiki.xml");
+        // FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        // BufferedWriter bw = new BufferedWriter(fw);
+        // if (!file.exists()) {
+        //     try {
+        //         file.createNewFile();
+        //     } catch (IOException e) {
+        //         e.printStackTrace();
+        //     }
+        // }
+        // for(int i=0; i<wikiHandler.getWebsite().getPageList().size();i++){
+        //     WikiPage b=wikiHandler.getWebsite().getPageList().get(i);
+        //     bw.write("<title>" + b.title + "</title> \n");
+        //     bw.write("<text>" + b.text + "</text> \n");
+        // }
     }
 
     public static class WikiHandler extends DefaultHandler {
@@ -44,6 +47,7 @@ public class SaxParserMain {
         private static final String PAGE = "page";
         private static final String TITLE = "title";
         private static final String TEXT = "text";
+        int count=0;
 
         private Wiki website;
         private StringBuilder elementValue;
@@ -88,6 +92,12 @@ public class SaxParserMain {
                     break;
                 case TEXT:
                     latestPage().settext(elementValue.toString());
+                    try {
+                        writeToFile(website.getPageList());
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     break;
             }
         }
@@ -101,6 +111,32 @@ public class SaxParserMain {
         public Wiki getWebsite() {
             return website;
         }
+    }
+
+    static void writeToFile(List<WikiPage> list) throws IOException{
+
+        // Collections.sort(list);
+        File file = new File("mywiki.txt");
+    
+    
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+    
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        PrintWriter pw = new PrintWriter(fw);
+    
+        Iterator<WikiPage> it = list.iterator();
+        while (it.hasNext()) {
+            pw.println(it.next().title);
+        }
+        pw.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");   
+        pw.close();
+        // System.out.println(++counterz + "Done");
+    }
+
+    private static String getSuffix() {
+        return null;
     }
 
     public static class Wiki {
