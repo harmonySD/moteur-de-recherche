@@ -15,6 +15,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SaxParserMain {
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
@@ -25,21 +27,7 @@ public class SaxParserMain {
         WikiHandler wikiHandler = new WikiHandler();
         saxParser.parse("frwiki-latest-pages-articles.xml", wikiHandler);
         System.out.println(wikiHandler.getWebsite().getPageList().size());
-        // File file = new File("mywiki.xml");
-        // FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        // BufferedWriter bw = new BufferedWriter(fw);
-        // if (!file.exists()) {
-        //     try {
-        //         file.createNewFile();
-        //     } catch (IOException e) {
-        //         e.printStackTrace();
-        //     }
-        // }
-        // for(int i=0; i<wikiHandler.getWebsite().getPageList().size();i++){
-        //     WikiPage b=wikiHandler.getWebsite().getPageList().get(i);
-        //     bw.write("<title>" + b.title + "</title> \n");
-        //     bw.write("<text>" + b.text + "</text> \n");
-        // }
+ 
     }
 
     public static class WikiHandler extends DefaultHandler {
@@ -95,7 +83,6 @@ public class SaxParserMain {
                     try {
                         writeToFile(website.getPageList());
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     break;
@@ -114,35 +101,30 @@ public class SaxParserMain {
     }
 
     static void writeToFile(List<WikiPage> list) throws IOException{
-
-        // Collections.sort(list);
+        Pattern p;
+        Matcher m;
+        p = Pattern.compile("aéro*");
         File file = new File("mywiki.txt");
-    
-    
         if (!file.exists()) {
             file.createNewFile();
         }
-    
+
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         PrintWriter pw = new PrintWriter(fw);
-    
         Iterator<WikiPage> it = list.iterator();
+
         while (it.hasNext()) {
             SaxParserMain.WikiPage n = it.next();
-            pw.println("<title>"+n.title.toLowerCase()+"</title>\n"+"<text>"+n.text.toLowerCase()+"</text>");
-        }
-        // pw.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");   
+            m = p.matcher(n.text.toLowerCase());
+            if(m.find()){
+                pw.println("<title>"+n.title.toLowerCase()+"</title>\n"+"<text>"+n.text.toLowerCase()+"</text>");
+            }
+        }  
         pw.close();
-        // System.out.println(++counterz + "Done");
     }
-
-    // private static String getSuffix() {
-    //     return null;
-    // }
-
     public static class Wiki {
         private List<WikiPage> pageList;
-
+        
         public void setPageList(List<WikiPage> pageList) {
             this.pageList = pageList;
         }
