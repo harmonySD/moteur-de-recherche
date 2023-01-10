@@ -128,16 +128,17 @@ public class SaxParserMain {
     
         Iterator<WikiPage> it = list.iterator();
         while (it.hasNext()) {
-            pw.println(it.next().title);
+            SaxParserMain.WikiPage n = it.next();
+            pw.println("<title>"+n.title.toLowerCase()+"</title>\n"+"<text>"+n.text.toLowerCase()+"</text>");
         }
-        pw.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");   
+        // pw.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");   
         pw.close();
         // System.out.println(++counterz + "Done");
     }
 
-    private static String getSuffix() {
-        return null;
-    }
+    // private static String getSuffix() {
+    //     return null;
+    // }
 
     public static class Wiki {
         private List<WikiPage> pageList;
