@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class SaxParserMain {
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-        
+        int count=0;
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
@@ -104,7 +104,7 @@ public class SaxParserMain {
         Pattern p;
         Matcher m;
         p = Pattern.compile("aéro*");
-        File file = new File("mywiki.txt");
+        File file = new File("mywiki.xml");
         if (!file.exists()) {
             file.createNewFile();
         }
@@ -117,7 +117,7 @@ public class SaxParserMain {
             SaxParserMain.WikiPage n = it.next();
             m = p.matcher(n.text.toLowerCase());
             if(m.find()){
-                pw.println("<title>"+n.title.toLowerCase()+"</title>\n"+"<text>"+n.text.toLowerCase()+"</text>");
+                pw.println("<title>"+n.title+"</title>\n"+"<id>"+n.count+"</id>\n"+"<text>"+n.text.toLowerCase()+"</text>");
             }
         }  
         pw.close();
@@ -137,6 +137,7 @@ public class SaxParserMain {
     public static class WikiPage {
         private String title;
         private String text;
+        private int count;
 
         public void setTitle(String title) {
             this.title = title;
