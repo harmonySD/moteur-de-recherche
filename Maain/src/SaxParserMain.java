@@ -3,12 +3,12 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.nio.file.Paths;
 import java.util.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,15 +18,22 @@ import java.util.regex.Pattern;
 
 public class SaxParserMain {
     private static Map<String, Integer> titleID = new HashMap<>();
+    private static Integer pageCount;
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-        int count=0;
+        pageCount = 0;
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
         WikiHandler wikiHandler = new WikiHandler();
-        saxParser.parse("frwiki-latest-pages-articles.xml", wikiHandler);
+        if(args.length > 0){
+            saxParser.parse(Paths.get(args[0]).toAbsolutePath().toString(), wikiHandler);
+        }else {
+            saxParser.parse("frwiki-latest-pages-articles.xml", wikiHandler);
+        }
         System.out.println(wikiHandler.getWebsite().getPageList().size());
- 
+
+        ParserLogger logger = new ParserLogger(pageCount);
+        logger.run();
     }
 
     public static class WikiHandler extends DefaultHandler {
@@ -34,7 +41,6 @@ public class SaxParserMain {
         private static final String PAGE = "page";
         private static final String TITLE = "title";
         private static final String TEXT = "text";
-        int count=0;
 
         private Wiki website;
         private StringBuilder elementValue;
@@ -78,7 +84,7 @@ public class SaxParserMain {
                     latestPage().setTitle(elementValue.toString());
                     break;
                 case TEXT:
-                    latestPage().settext(elementValue.toString());
+                    latestPage().setText(elementValue.toString());
                     try {
                         writeToFile(website.getPageList());
                     } catch (IOException e) {
@@ -117,14 +123,17 @@ public class SaxParserMain {
             SaxParserMain.WikiPage n = it.next();
             m = p.matcher(n.text.toLowerCase());
             if(m.find()){
-                titleID.put(n.title, n.count);
+                titleID.put(n.title, n.id);
                 String s = n.text.toLowerCase().replaceAll("\\[(.*:.*)\\]","");
                 s = s.replaceAll("^([a-z]|[A-Z])*","");
                 s= s.replaceAll("\\{|}","");
                 s=s.replaceAll("=+.*=","");
                 s=s.replaceAll("\\?|!|\\.|,|:|;|-|_|\\+|\\*|\\||`","");
                 s=s.replaceAll("<ref>.*</ref>","");
-                pw.println("<title>"+n.title+"</title>\n"+"<id>"+n.count+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
+
+                pageCount++;
+                n.setId(pageCount-1);
+                pw.println("<title>"+n.title+"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
             }
         }  
         pw.close();
@@ -144,7 +153,7 @@ public class SaxParserMain {
     public static class WikiPage {
         private String title;
         private String text;
-        private int count;
+        private int id;
 
         public void setTitle(String title) {
             this.title = title;
@@ -154,12 +163,16 @@ public class SaxParserMain {
             return this.title;
         }
 
-        public void settext(String text) {
+        public void setText(String text) {
             this.text = text;
         }
 
-        public String gettext() {
+        public String getText() {
             return this.text;
+        }
+
+        public void setId(int id){
+            this.id = id;
         }
     }
 }
