@@ -118,8 +118,13 @@ public class SaxParserMain {
             m = p.matcher(n.text.toLowerCase());
             if(m.find()){
                 titleID.put(n.title, n.count);
-
-                pw.println("<title>"+n.title+"</title>\n"+"<id>"+n.count+"</id>\n"+"<text>"+n.text.toLowerCase()+"</text>");
+                String s = n.text.toLowerCase().replaceAll("\\[(.*:.*)\\]","");
+                s = s.replaceAll("^([a-z]|[A-Z])*","");
+                s= s.replaceAll("\\{|}","");
+                s=s.replaceAll("=+.*=","");
+                s=s.replaceAll("\\?|!|\\.|,|:|;|-|_|\\+|\\*|\\||`","");
+                s=s.replaceAll("<ref>.*</ref>","");
+                pw.println("<title>"+n.title+"</title>\n"+"<id>"+n.count+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
             }
         }  
         pw.close();
