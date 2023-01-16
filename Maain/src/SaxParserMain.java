@@ -28,7 +28,7 @@ public class SaxParserMain {
         if(args.length > 0){
             saxParser.parse(Paths.get(args[0]).toAbsolutePath().toString(), wikiHandler);
         }else {
-            saxParser.parse("frwiki-latest-pages-articles.xml", wikiHandler);
+            saxParser.parse("../../frwiki-latest-pages-articles.xml", wikiHandler);
         }
         System.out.println(wikiHandler.getWebsite().getPageList().size());
 
@@ -44,6 +44,7 @@ public class SaxParserMain {
 
         private Wiki website;
         private StringBuilder elementValue;
+        private PrintWriter pw;
 
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
@@ -57,6 +58,25 @@ public class SaxParserMain {
         @Override
         public void startDocument() throws SAXException {
             website = new Wiki();
+            File file = new File("mywikiki.xml");
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            FileWriter fw;
+            try {
+                fw = new FileWriter(file.getAbsoluteFile());
+                pw = new PrintWriter(fw);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         }
 
         @Override
@@ -86,7 +106,7 @@ public class SaxParserMain {
                 case TEXT:
                     latestPage().setText(elementValue.toString());
                     try {
-                        writeToFile(website.getPageList());
+                        writeToFile(website.getPageList(),pw);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -106,17 +126,17 @@ public class SaxParserMain {
 
     }
 
-    static void writeToFile(List<WikiPage> list) throws IOException{
+    static void writeToFile(List<WikiPage> list, PrintWriter pw) throws IOException{
         Pattern p;
         Matcher m;
         p = Pattern.compile("aéro*");
-        File file = new File("mywiki.xml");
-        if (!file.exists()) {
-            file.createNewFile();
-        }
+        // File file = new File("mywiki.xml");
+        // if (!file.exists()) {
+        //     file.createNewFile();
+        // }
 
-        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        PrintWriter pw = new PrintWriter(fw);
+        // FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        // PrintWriter pw = new PrintWriter(fw);
         Iterator<WikiPage> it = list.iterator();
 
         while (it.hasNext()) {
@@ -140,6 +160,7 @@ public class SaxParserMain {
     }
     public static class Wiki {
         private List<WikiPage> pageList;
+
         
         public void setPageList(List<WikiPage> pageList) {
             this.pageList = pageList;
