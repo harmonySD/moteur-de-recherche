@@ -78,6 +78,10 @@ public class SaxParserMain {
             }
 
         }
+        @Override
+        public void endDocument() throws SAXException{
+            pw.close();
+        }
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -130,13 +134,6 @@ public class SaxParserMain {
         Pattern p;
         Matcher m;
         p = Pattern.compile("aéro*");
-        // File file = new File("mywiki.xml");
-        // if (!file.exists()) {
-        //     file.createNewFile();
-        // }
-
-        // FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        // PrintWriter pw = new PrintWriter(fw);
         Iterator<WikiPage> it = list.iterator();
 
         while (it.hasNext()) {
@@ -156,7 +153,7 @@ public class SaxParserMain {
                 pw.println("<title>"+n.title+"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
             }
         }  
-        pw.close();
+     
     }
     public static class Wiki {
         private List<WikiPage> pageList;
