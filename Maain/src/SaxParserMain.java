@@ -12,9 +12,7 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 
 public class SaxParserMain {
-    private static Integer pageCount;
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-        pageCount = 0;
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
@@ -26,8 +24,5 @@ public class SaxParserMain {
         }
         System.out.println(wikiHandler.getWebsite().getPageList().size());
 
-        //TODO Fix logger.
-        ParserLogger logger = new ParserLogger(pageCount);
-        logger.run();
     }
 }

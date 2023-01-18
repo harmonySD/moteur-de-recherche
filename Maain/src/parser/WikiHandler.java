@@ -32,8 +32,9 @@ public class WikiHandler extends DefaultHandler{
 
     @Override
     public void startDocument() throws SAXException {
+        pageCount = 0;
         website = new Wiki();
-        File file = new File("mywikiki.xml");
+        File file = new File("mywiki.xml");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -43,15 +44,16 @@ public class WikiHandler extends DefaultHandler{
             }
         }
 
-        FileWriter fw;
         try {
-            fw = new FileWriter(file.getAbsoluteFile());
-            pw = new PrintWriter(new BufferedWriter(fw));
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
+        // Should log the number of pages written. Does not work currently.
+        ParserLogger logger = new ParserLogger(pageCount);
+        logger.run();
     }
     @Override
     public void endDocument() throws SAXException{
@@ -104,7 +106,7 @@ public class WikiHandler extends DefaultHandler{
     }
 
 
-    static void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
+    private static void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Pattern p;
         Matcher m;
         p = Pattern.compile("aéro*");
@@ -115,12 +117,19 @@ public class WikiHandler extends DefaultHandler{
             m = p.matcher(n.getText().toLowerCase());
             if(m.find()){
                 titleID.put(n.getTitle(), n.id);
-                String s = n.getText().toLowerCase().replaceAll("\\[(.*:.*)\\]","");
+                // Removes [[Mot_clé:titre…
+                String s = n.getText().toLowerCase();
+                s = s.replaceAll("\\[(.*:.*)\\]","");
                 s = s.replaceAll("^([a-z]|[A-Z])*","");
-                s= s.replaceAll("\\{|}","");
-                s=s.replaceAll("=+.*=","");
-                s=s.replaceAll("\\?|!|\\.|,|:|;|-|_|\\+|\\*|\\||`","");
-                s=s.replaceAll("<ref>.*</ref>","");
+                // Removes [[666...]].
+                s = s.replaceAll("\\[\\[(\\d*)\\]]","");
+                //s = s.replaceAll("\\{|}","");
+                s = s.replaceAll("\\(|\\)","");
+                s = s.replaceAll("=+.*=","");
+                // Removes all punctuation signs.
+                s = s.replaceAll("\\?|!|\\.|,|:|;|'|-|%|=|\\$|\\€|_|\\+|\\*|\\||`","");
+                // Removes all external links.
+                s = s.replaceAll("(<.*?>)","");
 
                 pageCount++;
                 n.setId(pageCount-1);
