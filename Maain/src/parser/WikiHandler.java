@@ -130,6 +130,7 @@ public class WikiHandler extends DefaultHandler{
                 s = s.replaceAll("\\?|!|\\.|,|:|;|'|-|%|=|\\$|\\€|_|\\+|\\*|\\||`","");
                 // Removes all external links.
                 s = s.replaceAll("(<.*?>)","");
+                s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
 
                 pageCount++;
                 n.setId(pageCount-1);
