@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 
 public class WikiHandler extends DefaultHandler{
     private static final Map<String, Integer> titleID = new HashMap<>();
-    private static Integer pageCount;
     private static final String WIKIS = "mediawiki";
     private static final String PAGE = "page";
     private static final String TITLE = "title";
     private static final String TEXT = "text";
 
+    private static int nbId=0;
     private Wiki website;
     private StringBuilder elementValue;
     private PrintWriter pw;
@@ -32,7 +32,6 @@ public class WikiHandler extends DefaultHandler{
 
     @Override
     public void startDocument() throws SAXException {
-        pageCount = 0;
         website = new Wiki();
         File file = new File("mywiki.xml");
         if (!file.exists()) {
@@ -50,13 +49,10 @@ public class WikiHandler extends DefaultHandler{
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        // Should log the number of pages written. Does not work currently.
-        ParserLogger logger = new ParserLogger(pageCount);
-        logger.run();
     }
     @Override
     public void endDocument() throws SAXException{
+        System.out.println("il me reste "+ nbId+ " pages");
         pw.close();
     }
 
@@ -88,6 +84,9 @@ public class WikiHandler extends DefaultHandler{
                 latestPage().setText(elementValue.toString());
                 try {
                     writeToFile(website.getPageList(),pw);
+                    //remettre a 0 la liste pour afficher que une fois chaque poage dans le fichier
+                    //et ne pas tout stocker
+                    website.setPageList(new ArrayList<>());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -111,14 +110,13 @@ public class WikiHandler extends DefaultHandler{
         Matcher m;
         p = Pattern.compile("aéro*");
         Iterator<Wiki.WikiPage> it = list.iterator();
-
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
             m = p.matcher(n.getText().toLowerCase());
             if(m.find()){
+                nbId++;
                 titleID.put(n.getTitle(), n.id);
-                pageCount++;
-                n.setId(pageCount-1);
+                n.setId(nbId);
                 // Removes [[Mot_clé:titre…
                 String s = n.getText().toLowerCase();
                 s = s.replaceAll("(\\{+)", "<ref>");
@@ -137,7 +135,7 @@ public class WikiHandler extends DefaultHandler{
                 s = s.replaceAll("(<.*?>)","").trim();
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
-
+                nbId=n.id;
                 pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
             }
         }

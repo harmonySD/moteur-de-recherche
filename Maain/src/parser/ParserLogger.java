@@ -9,7 +9,6 @@ public class ParserLogger implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("Nombre de page visitées : " + pageCount);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ignored) {

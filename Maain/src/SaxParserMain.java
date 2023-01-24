@@ -1,6 +1,5 @@
 //fortement inspirer de https://www.baeldung.com/java-sax-parser
 import org.xml.sax.SAXException;
-import parser.ParserLogger;
 import parser.WikiHandler;
 
 import java.nio.file.Paths;
@@ -20,9 +19,8 @@ public class SaxParserMain {
         if(args.length > 0){
             saxParser.parse(Paths.get(args[0]).toAbsolutePath().toString(), wikiHandler);
         }else {
-            saxParser.parse("../../frwiki-latest-pages-articles.xml", wikiHandler);
+            saxParser.parse("/Users/harmonysimon-duchatel/M2/maain/maain_moteurrecherche_wikipedia/frwiki10000.xml", wikiHandler);
         }
-        System.out.println(wikiHandler.getWebsite().getPageList().size());
 
     }
 }
