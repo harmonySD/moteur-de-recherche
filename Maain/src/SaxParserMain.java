@@ -19,7 +19,11 @@ public class SaxParserMain {
         if(args.length > 0){
             saxParser.parse(Paths.get(args[0]).toAbsolutePath().toString(), wikiHandler);
         }else {
-            saxParser.parse("/Users/harmonysimon-duchatel/M2/maain/maain_moteurrecherche_wikipedia/frwiki10000.xml", wikiHandler);
+            if(args.length==0){
+                System.out.println(" Ou est le chemin du fichier a traiter ? 🤨");
+            }else{
+                saxParser.parse(args[0], wikiHandler);
+            }
         }
 
     }
