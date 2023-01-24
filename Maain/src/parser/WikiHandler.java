@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WikiHandler extends DefaultHandler{
-    private static Map<String, Integer> titleID = new HashMap<>();
+    private static final Map<String, Integer> titleID = new HashMap<>();
     private static Integer pageCount;
     private static final String WIKIS = "mediawiki";
     private static final String PAGE = "page";
@@ -117,26 +117,29 @@ public class WikiHandler extends DefaultHandler{
             m = p.matcher(n.getText().toLowerCase());
             if(m.find()){
                 titleID.put(n.getTitle(), n.id);
-                // Removes [[Mot_clé:titre…
-                String s = n.getText().toLowerCase();
-                s = s.replaceAll("\\[(.*:.*)\\]","");
-                s = s.replaceAll("^([a-z]|[A-Z])*","");
-                // Removes [[666...]].
-                s = s.replaceAll("\\[\\[(\\d*)\\]]","");
-                //s = s.replaceAll("\\{|}","");
-                s = s.replaceAll("\\(|\\)","");
-                s = s.replaceAll("=+.*=","");
-                // Removes all punctuation signs.
-                s = s.replaceAll("\\?|!|\\.|,|:|;|'|-|%|=|\\$|\\€|_|\\+|\\*|\\||`","");
-                // Removes all external links.
-                s = s.replaceAll("(<.*?>)","");
-                s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
-
                 pageCount++;
                 n.setId(pageCount-1);
+                // Removes [[Mot_clé:titre…
+                String s = n.getText().toLowerCase();
+                s = s.replaceAll("(\\{+)", "<ref>");
+                s = s.replaceAll("(\\}+)", "</ref>");
+                s = s.replaceAll("\\[(.*:.*)\\]","").trim();
+                s = s.replaceAll("^([a-z]|[A-Z])*","").trim();
+                // Removes [[666...]].
+                s = s.replaceAll("\\[\\[(\\d*)\\]]","").trim();
+                //s = s.replaceAll("\\{|}","");
+                //Removes all (  ).
+                s = s.replaceAll("\\(|\\)","").trim();
+                s = s.replaceAll("=+.*=","").trim();
+                // Removes all punctuation signs.
+                s = s.replaceAll("\\?|!|\\.|,|:|;|'|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«","").trim();
+                // Removes all external links.
+                s = s.replaceAll("(<.*?>)","").trim();
+                //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
+                //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
+
                 pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
             }
         }
-
     }
 }
