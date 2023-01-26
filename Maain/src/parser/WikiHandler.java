@@ -137,7 +137,7 @@ public class WikiHandler extends DefaultHandler{
                 n.setId(titleID.get(n.getTitle()));
 
                 // Removes [[Mot_clé:titre…
-                String s = n.getText().toLowerCase();
+                String s = n.getText();
                 s= s.replaceAll("\\{\\{.+| \\|.*}*","");
                 s = s.replaceAll("\\[\\[(\\[0-9]*)\\]]","").trim();
                 s = s.replaceAll("[0-9]*","").trim();
@@ -146,31 +146,29 @@ public class WikiHandler extends DefaultHandler{
                 s = s.replaceAll("\\[(.*:.*)\\]","").trim();
                 s = s.replaceAll("^([a-z]|[A-Z])*","").trim();
                 // Removes [[666...]].
+                s = s.replaceAll("\\[\\[(\\d*)\\]]","").trim();
                 //s = s.replaceAll("\\{|}","");
                 //Removes all (  ).
                 s = s.replaceAll("\\(|\\)","").trim();
                 s = s.replaceAll("=+.*=","").trim();
                 // Removes all punctuation signs.
-                s = s.replaceAll("\\?|!|\\.|,|:|;|'|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«","").trim();
+                s = s.replaceAll("\\?|!|\\.|,|:|;|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«","").trim();
                 // Removes all external links.
                 s = s.replaceAll("(<.*?>)","").trim();
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
 
                 // Search for [[Article]] and replaces it with [[id]].
-                Pattern pattern = Pattern.compile("\\[\\[[\\w+| ]*]]");
+                Pattern pattern = Pattern.compile("\\[\\[[[A-Za-zÀ-ÖØ-öø-ÿ]+| ]*]]");
                 Matcher matcher = pattern.matcher(s);
                 StringBuilder sb = new StringBuilder();
-                StringBuilder replacement = new StringBuilder("[[");
                 while (matcher.find()) {
-                    if(!titleID.containsKey(matcher.group(1))) {
+                    String title = matcher.group(0).substring(2, matcher.group(0).length()-2);
+                    if(!titleID.containsKey(title)) {
                         nbId++;
-                        titleID.put(matcher.group(1), nbId);
+                        titleID.put(title, nbId);
                     }
-                    replacement.append(titleID.get(matcher.group(1)));
-                    replacement.append("]]");
-                    matcher.appendReplacement(sb, replacement.toString());
-                    System.out.println(matcher.group(1));
+                    matcher.appendReplacement(sb, "[[" + titleID.get(title) + "]]");
                 }
                 matcher.appendTail(sb);
                 pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+sb.toString().toLowerCase()+"</text>");
@@ -178,7 +176,10 @@ public class WikiHandler extends DefaultHandler{
                 if (s.length()<999){
                     // System.out.println("page trop courte !");
                 }else{
-                    pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
+                    if(!s.isBlank()) {
+                        pw.println("<title>" + n.getTitle() + "</title>\n" + "<id>" +
+                                n.id + "</id>\n" + "<text>" + s.toLowerCase() + "</text>");
+                    }
                 }
             }
         }
