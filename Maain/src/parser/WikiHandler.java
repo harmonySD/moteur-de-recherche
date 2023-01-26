@@ -108,7 +108,7 @@ public class WikiHandler extends DefaultHandler{
     private static void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Pattern p;
         Matcher m;
-        p = Pattern.compile("aéro*");
+        p = Pattern.compile("aér*|avion");
         Iterator<Wiki.WikiPage> it = list.iterator();
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
@@ -139,7 +139,11 @@ public class WikiHandler extends DefaultHandler{
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
 
                 nbId=n.id;
-                pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
+                if (s.length()<999){
+                    // System.out.println("page trop courte !");
+                }else{
+                    pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
+                }
             }
         }
     }

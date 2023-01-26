@@ -29,6 +29,5 @@ public class SaxParserMain {
                 saxParser.parse(args[0], wikiHandler);
             }
         }
-
     }
 }
