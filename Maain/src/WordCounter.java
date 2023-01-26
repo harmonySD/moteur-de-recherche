@@ -9,43 +9,58 @@ import java.util.*;
 
 
 public class WordCounter extends DefaultHandler {
-    private static Map<String, Integer> treemap = new TreeMap<>(Collections.reverseOrder());
+    private static SortedSet<Map.Entry<String,Integer>> treemap = new TreeSet<>();
     private static final int ARBITRARYNUMBEROFWORDS = 20000;
 
     private static final HashSet<String> IgnoredWords = new HashSet<>(Arrays.asList("le", "la", "les", "à", "de", "des"
             , "du", "sous", "sur", "dans", "ton", "tu", "je", "il", "nous", "vous", "ils", "elles", "elle", "on", "tous", "tout", "et"
             , "ou", "où"));
 
-    public Map<String,Integer> wordCounter() throws IOException {
+    public static Map<String,Integer> wordCounter() throws IOException {
         Map<String, Integer> alphabeticallySorted = new TreeMap<>();
         BufferedReader objReader = new BufferedReader(new FileReader("./mywiki.xml"));
+        Map<String,Integer> tmpHashMap = new HashMap<>();
         String strCurrentLine;
         while ((strCurrentLine = objReader.readLine()) != null) {
-            String correctedStr = strCurrentLine.replaceAll("</|\\w*>","");
+            String correctedStr = strCurrentLine.replaceAll("</|\\w*>", "");
             String[] toExploreStr = correctedStr.toLowerCase(Locale.ROOT).split(" ");
-            for( String toCheck : toExploreStr){
-                if (!IgnoredWords.contains(toCheck)){
-                    if(treemap.containsKey(toCheck)){
-                        int value = treemap.get(toCheck);
+            for (String toCheck : toExploreStr) {
+                if (!IgnoredWords.contains(toCheck) && !toCheck.equals("") && !toCheck.equals(" ")) {
+                    toCheck = toCheck.trim();
+                    if (tmpHashMap.containsKey(toCheck)) {
+                        int value = tmpHashMap.get(toCheck);
                         value++;
-                        treemap.replace(toCheck, value);
-                    }
-                    else {
-                        treemap.put(toCheck,1);
+                        tmpHashMap.replace(toCheck, value);
+                    } else {
+                        tmpHashMap.put(toCheck, 1);
                     }
                 }
-            }
-
-            //https://stackoverflow.com/questions/5648336/how-select-first-n-items-in-java-treemap
-            int count =0;
-            for(Map.Entry<String,Integer> entry:treemap.entrySet() ){
-                if(count>=ARBITRARYNUMBEROFWORDS){
-                    break;
-                }
-                alphabeticallySorted.put(entry.getKey(),entry.getValue());
-                count++;
             }
         }
+        treemap = entriesSortedByValues(tmpHashMap);
+
+        //https://stackoverflow.com/questions/5648336/how-select-first-n-items-in-java-treemap
+        int count =0;
+        for(Map.Entry<String,Integer> entry:treemap){
+            if(count>=ARBITRARYNUMBEROFWORDS){
+                break;
+            }
+            alphabeticallySorted.put(entry.getKey(),entry.getValue());
+            count++;
+        }
         return alphabeticallySorted;
+    }
+    static <K,V extends Comparable<? super V>>
+    SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+                new Comparator<Map.Entry<K,V>>() {
+                    @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+                        int res = e1.getValue().compareTo(e2.getValue());
+                        return res != 0 ? res : 1;
+                    }
+                }
+        );
+        sortedEntries.addAll(map.entrySet());
+        return sortedEntries;
     }
 }

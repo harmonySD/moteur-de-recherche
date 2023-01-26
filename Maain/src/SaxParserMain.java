@@ -29,5 +29,11 @@ public class SaxParserMain {
                 saxParser.parse(args[0], wikiHandler);
             }
         }
+        Map<String,Integer> map = WordCounter.wordCounter();
+        for(Map.Entry<String,Integer> entry: map.entrySet()){
+            System.out.println("Cle "+entry.getKey()+" Valeur "+ entry.getValue());
+        }
+
     }
+
 }
