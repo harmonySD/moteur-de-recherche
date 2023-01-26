@@ -54,6 +54,23 @@ public class WikiHandler extends DefaultHandler{
     public void endDocument() throws SAXException{
         System.out.println("il me reste "+ nbId+ " pages");
         pw.close();
+        // Serialization of the map for next steps.
+        try {
+            FileOutputStream fileOutputStream
+                    = new FileOutputStream(
+                    "IDMappedToTitle.txt");
+
+            ObjectOutputStream objectOutputStream
+                    = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeObject(titleID);
+
+            objectOutputStream.close();
+            fileOutputStream.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -115,8 +132,10 @@ public class WikiHandler extends DefaultHandler{
             m = p.matcher(n.getText().toLowerCase());
             if(m.find()){
                 nbId++;
-                titleID.put(n.getTitle(), n.id);
-                n.setId(nbId);
+                // Set the ID mapped to the article title if it does not already exist.
+                titleID.computeIfAbsent(n.getTitle(), k -> nbId);
+                n.setId(titleID.get(n.getTitle()));
+
                 // Removes [[Mot_clé:titre…
                 String s = n.getText().toLowerCase();
                 s= s.replaceAll("\\{\\{.+| \\|.*}*","");
@@ -138,7 +157,24 @@ public class WikiHandler extends DefaultHandler{
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
 
-                nbId=n.id;
+                // Search for [[Article]] and replaces it with [[id]].
+                Pattern pattern = Pattern.compile("\\[\\[[\\w+| ]*]]");
+                Matcher matcher = pattern.matcher(s);
+                StringBuilder sb = new StringBuilder();
+                StringBuilder replacement = new StringBuilder("[[");
+                while (matcher.find()) {
+                    if(!titleID.containsKey(matcher.group(1))) {
+                        nbId++;
+                        titleID.put(matcher.group(1), nbId);
+                    }
+                    replacement.append(titleID.get(matcher.group(1)));
+                    replacement.append("]]");
+                    matcher.appendReplacement(sb, replacement.toString());
+                    System.out.println(matcher.group(1));
+                }
+                matcher.appendTail(sb);
+                pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+sb.toString().toLowerCase()+"</text>");
+                
                 if (s.length()<999){
                     // System.out.println("page trop courte !");
                 }else{
