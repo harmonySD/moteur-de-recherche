@@ -119,12 +119,14 @@ public class WikiHandler extends DefaultHandler{
                 n.setId(nbId);
                 // Removes [[Mot_clé:titre…
                 String s = n.getText().toLowerCase();
+                s= s.replaceAll("\\{\\{.+| \\|.*}*","");
+                s = s.replaceAll("\\[\\[(\\[0-9]*)\\]]","").trim();
+                s = s.replaceAll("[0-9]*","").trim();
                 s = s.replaceAll("(\\{+)", "<ref>");
                 s = s.replaceAll("(\\}+)", "</ref>");
                 s = s.replaceAll("\\[(.*:.*)\\]","").trim();
                 s = s.replaceAll("^([a-z]|[A-Z])*","").trim();
                 // Removes [[666...]].
-                s = s.replaceAll("\\[\\[(\\d*)\\]]","").trim();
                 //s = s.replaceAll("\\{|}","");
                 //Removes all (  ).
                 s = s.replaceAll("\\(|\\)","").trim();
@@ -135,6 +137,7 @@ public class WikiHandler extends DefaultHandler{
                 s = s.replaceAll("(<.*?>)","").trim();
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
+
                 nbId=n.id;
                 pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+s.toLowerCase()+"</text>");
             }
