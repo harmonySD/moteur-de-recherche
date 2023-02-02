@@ -153,23 +153,16 @@ public class WikiHandler extends DefaultHandler{
                 s = s.replaceAll("\\(|\\)","");
                 s = s.replaceAll("=+.*=","");
                 // Removes all punctuation signs.
-                s = s.replaceAll("\\?|!|\\.|,|:|;|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«","");
+                s = s.replaceAll("\\?|!|\\.|,|:|;|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«"," ");
                 // Removes all external links.
                 //s = s.replaceAll("(<.*>)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
-                s = s.replaceAll("l’","");
-                s = s.replaceAll("l'","");
-                s = s.replaceAll("d’","");
-                s = s.replaceAll("d'","");
-                s=s.replaceAll("j'","");
-                s=s.replaceAll("l'","");
-                s=s.replaceAll("s'","");
+                s = s.replaceAll("l’|l'|d’|d'|j'|s'","");
                 s = s.replaceAll(" ","");
-                s=s.replaceAll("–","");
+                s=s.replaceAll("–"," ");
                 s=s.replaceAll("—","");
                 s=s.replaceAll("…","");
-                s=s.replaceAll("'+.*'+","");
                 s=s.replaceAll("/*","");
                 // Search for [[Article]] and replaces it with [[id]].
                 Pattern pattern = Pattern.compile("\\[\\[[[A-Za-zÀ-ÖØ-öø-ÿ]+| ]*]]");

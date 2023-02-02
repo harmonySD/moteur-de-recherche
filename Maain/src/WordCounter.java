@@ -16,7 +16,7 @@ public class WordCounter extends DefaultHandler {
     private static final int ARBITRARYNUMBEROFWORDS = 20000;
     private static final HashSet<String> IgnoredWords = new HashSet<>(Arrays.asList("le", "la", "les", "à", "de", "des"
             , "du", "sous", "sur", "dans", "ton", "tu", "je", "il", "nous", "vous", "ils", "elles", "elle", "on", "tous"
-            , "tout", "et", "ou", "où", "aux","au","du"));
+            , "tout", "et", "ou", "où", "aux","au","du","que","quel","quelle"));
 
     public static Map<String,Integer> wordCounter() throws IOException {
         Map<String, Integer> alphabeticallySorted = new TreeMap<>();
@@ -28,14 +28,13 @@ public class WordCounter extends DefaultHandler {
             correctedStr = correctedStr.replaceAll("<.*/>", "");
             correctedStr = correctedStr.replaceAll("</.*>","");
             correctedStr = correctedStr.replaceAll("<.*>","");
-            correctedStr = correctedStr.replaceAll("/>","");
-            correctedStr = correctedStr.replaceAll(">","");
-            correctedStr = correctedStr.replaceAll("<","");
+            correctedStr = correctedStr.replaceAll("/>|<|>","");
             correctedStr = correctedStr.replaceAll("<gallery","");
             correctedStr = correctedStr.replaceAll("style.+","");
             correctedStr = correctedStr.replaceAll("jpg","");
             correctedStr = correctedStr.replaceAll("&|#.*|\".*","");
-            correctedStr = correctedStr.replaceAll("^(\\w)*'^(\\w)*","");
+            correctedStr = correctedStr.replaceAll("'.*","");
+            correctedStr = correctedStr.replaceAll("’.*","");
             String[] toExploreStr = correctedStr.toLowerCase(Locale.ROOT).split(" ");
             for (String toCheck : toExploreStr) {
                 if (!IgnoredWords.contains(toCheck) && !toCheck.equals("") && !toCheck.equals(" ")
