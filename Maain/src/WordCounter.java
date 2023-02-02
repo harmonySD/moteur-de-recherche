@@ -2,19 +2,21 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import parser.Wiki;
 
 import java.io.*;
 import java.util.*;
 
 
 public class WordCounter extends DefaultHandler {
+    //Properties props = new Properties();
+    //props.load(IOUtils.readerFromString("StanfordCoreNLP-french.properties"));
+    //StanfordCoreNLP corenlp = new StanfordCoreNLP(props);
+
     private static SortedSet<Map.Entry<String,Integer>> treemap = new TreeSet<>();
     private static final int ARBITRARYNUMBEROFWORDS = 20000;
-
     private static final HashSet<String> IgnoredWords = new HashSet<>(Arrays.asList("le", "la", "les", "à", "de", "des"
-            , "du", "sous", "sur", "dans", "ton", "tu", "je", "il", "nous", "vous", "ils", "elles", "elle", "on", "tous", "tout", "et"
-            , "ou", "où"));
+            , "du", "sous", "sur", "dans", "ton", "tu", "je", "il", "nous", "vous", "ils", "elles", "elle", "on", "tous"
+            , "tout", "et", "ou", "où", "aux","au","du"));
 
     public static Map<String,Integer> wordCounter() throws IOException {
         Map<String, Integer> alphabeticallySorted = new TreeMap<>();
@@ -22,10 +24,22 @@ public class WordCounter extends DefaultHandler {
         Map<String,Integer> tmpHashMap = new HashMap<>();
         String strCurrentLine;
         while ((strCurrentLine = objReader.readLine()) != null) {
-            String correctedStr = strCurrentLine.replaceAll("</|\\w*>", "");
+            String correctedStr = strCurrentLine.replaceAll("<.*>.*</.*>","");
+            correctedStr = correctedStr.replaceAll("<.*/>", "");
+            correctedStr = correctedStr.replaceAll("</.*>","");
+            correctedStr = correctedStr.replaceAll("<.*>","");
+            correctedStr = correctedStr.replaceAll("/>","");
+            correctedStr = correctedStr.replaceAll(">","");
+            correctedStr = correctedStr.replaceAll("<","");
+            correctedStr = correctedStr.replaceAll("<gallery","");
+            correctedStr = correctedStr.replaceAll("style.+","");
+            correctedStr = correctedStr.replaceAll("jpg","");
+            correctedStr = correctedStr.replaceAll("&|#.*|\".*","");
+            correctedStr = correctedStr.replaceAll("^(\\w)*'^(\\w)*","");
             String[] toExploreStr = correctedStr.toLowerCase(Locale.ROOT).split(" ");
             for (String toCheck : toExploreStr) {
-                if (!IgnoredWords.contains(toCheck) && !toCheck.equals("") && !toCheck.equals(" ")) {
+                if (!IgnoredWords.contains(toCheck) && !toCheck.equals("") && !toCheck.equals(" ")
+                        && !toCheck.contains("[") && !toCheck.contains("]")) {
                     toCheck = toCheck.trim();
                     if (tmpHashMap.containsKey(toCheck)) {
                         int value = tmpHashMap.get(toCheck);

@@ -2,6 +2,9 @@
 import org.xml.sax.SAXException;
 import parser.WikiHandler;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -29,11 +32,23 @@ public class SaxParserMain {
                 saxParser.parse(args[0], wikiHandler);
             }
         }
-        Map<String,Integer> map = WordCounter.wordCounter();
-        for(Map.Entry<String,Integer> entry: map.entrySet()){
+        //Dictionnaire
+        File file = new File("Dictionnaire.txt");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        BufferedWriter dictioBuff = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+        Map<String,Integer> Dictionnaire = WordCounter.wordCounter();
+        for(Map.Entry<String,Integer> entry: Dictionnaire.entrySet()){
+            dictioBuff.write(entry.getKey() + " " + entry.getValue() +"\n");
             System.out.println("Cle "+entry.getKey()+" Valeur "+ entry.getValue());
         }
-
+        dictioBuff.close();
     }
 
 }

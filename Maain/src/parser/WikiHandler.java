@@ -138,26 +138,39 @@ public class WikiHandler extends DefaultHandler{
 
                 // Removes [[Mot_clé:titre…
                 String s = n.getText();
+                s=s.replaceAll("(http|ftp|https):\\/\\/([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])\n","");
                 s= s.replaceAll("\\{\\{.+| \\|.*}*","");
-                s = s.replaceAll("\\[\\[(\\[0-9]*)\\]]","").trim();
-                s = s.replaceAll("[0-9]*","").trim();
+                s = s.replaceAll("\\[\\[(\\[0-9]*)]]","");
+                s = s.replaceAll("[0-9]*","");
                 s = s.replaceAll("(\\{+)", "<ref>");
                 s = s.replaceAll("(\\}+)", "</ref>");
-                s = s.replaceAll("\\[(.*:.*)\\]","").trim();
-                s = s.replaceAll("^([a-z]|[A-Z])*","").trim();
+                s = s.replaceAll("\\[(.*:.*)\\]","");
+                s = s.replaceAll("^([a-z]|[A-Z])*","");
                 // Removes [[666...]].
-                s = s.replaceAll("\\[\\[(\\d*)\\]]","").trim();
+                s = s.replaceAll("\\[\\[(\\d*)\\]]","");
                 //s = s.replaceAll("\\{|}","");
                 //Removes all (  ).
-                s = s.replaceAll("\\(|\\)","").trim();
-                s = s.replaceAll("=+.*=","").trim();
+                s = s.replaceAll("\\(|\\)","");
+                s = s.replaceAll("=+.*=","");
                 // Removes all punctuation signs.
-                s = s.replaceAll("\\?|!|\\.|,|:|;|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«","").trim();
+                s = s.replaceAll("\\?|!|\\.|,|:|;|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«","");
                 // Removes all external links.
-                s = s.replaceAll("(<.*?>)","").trim();
+                //s = s.replaceAll("(<.*>)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
-
+                s = s.replaceAll("l’","");
+                s = s.replaceAll("l'","");
+                s = s.replaceAll("d’","");
+                s = s.replaceAll("d'","");
+                s=s.replaceAll("j'","");
+                s=s.replaceAll("l'","");
+                s=s.replaceAll("s'","");
+                s = s.replaceAll(" ","");
+                s=s.replaceAll("–","");
+                s=s.replaceAll("—","");
+                s=s.replaceAll("…","");
+                s=s.replaceAll("'+.*'+","");
+                s=s.replaceAll("/*","");
                 // Search for [[Article]] and replaces it with [[id]].
                 Pattern pattern = Pattern.compile("\\[\\[[[A-Za-zÀ-ÖØ-öø-ÿ]+| ]*]]");
                 Matcher matcher = pattern.matcher(s);
@@ -171,8 +184,9 @@ public class WikiHandler extends DefaultHandler{
                     matcher.appendReplacement(sb, "[[" + titleID.get(title) + "]]");
                 }
                 matcher.appendTail(sb);
-                pw.println("<title>"+ n.getTitle() +"</title>\n"+"<id>"+n.id+"</id>\n"+"<text>"+sb.toString().toLowerCase()+"</text>");
-                
+                if(!sb.toString().equals("")) {
+                    pw.println("<title>" + n.getTitle() + "</title>\n" + "<id>" + n.id + "</id>\n" + "<text>" + sb.toString().toLowerCase() + "</text>");
+                }
                 if (s.length()<999){
                     // System.out.println("page trop courte !");
                 }else{
