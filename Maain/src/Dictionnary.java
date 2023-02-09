@@ -10,10 +10,11 @@ public class Dictionnary extends DefaultHandler {
     //props.load(IOUtils.readerFromString("StanfordCoreNLP-french.properties"));
     //StanfordCoreNLP corenlp = new StanfordCoreNLP(props);
 
+    private static SortedSet<Map.Entry<String,Integer>> treemap = new TreeSet<>();
     private static final int ARBITRARYNUMBEROFWORDS = 20000;
     private static final HashSet<String> IgnoredWords = new HashSet<>(Arrays.asList("le", "la", "les", "à", "de", "des"
             , "du", "sous", "sur", "dans", "ton", "tu", "je", "il", "nous", "vous", "ils", "elles", "elle", "on", "tous"
-            , "tout", "et", "ou", "où", "aux","au","du","que","quel","quelle","a"));
+            , "tout", "et", "ou", "où", "aux","au","du","que","quel","quelle"));
 
     public static Map<String,Integer> makeDictionnary() throws IOException {
         Map<String, Integer> alphabeticallySorted = new TreeMap<>();
@@ -47,11 +48,11 @@ public class Dictionnary extends DefaultHandler {
                 }
             }
         }
-        SortedSet<Map.Entry<String, Integer>> treemap = entriesSortedByValues(tmpHashMap);
+        treemap = entriesSortedByValues(tmpHashMap);
 
         //https://stackoverflow.com/questions/5648336/how-select-first-n-items-in-java-treemap
         int count =0;
-        for(Map.Entry<String,Integer> entry: treemap){
+        for(Map.Entry<String,Integer> entry:treemap){
             if(count>=ARBITRARYNUMBEROFWORDS){
                 break;
             }
@@ -60,13 +61,12 @@ public class Dictionnary extends DefaultHandler {
         }
         return alphabeticallySorted;
     }
-
     static <K,V extends Comparable<? super V>>
     SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
         SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
                 new Comparator<Map.Entry<K,V>>() {
                     @Override public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
-                        int res = e1.getValue().compareTo(e2.getValue());
+                        int res = e2.getValue().compareTo(e1.getValue());
                         return res != 0 ? res : 1;
                     }
                 }
