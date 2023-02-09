@@ -2,10 +2,14 @@
 import org.xml.sax.SAXException;
 import parser.WikiHandler;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.Paths;
+import java.security.KeyStore.Entry;
 import java.util.*;
 
 import javax.xml.XMLConstants;
@@ -15,7 +19,38 @@ import javax.xml.parsers.SAXParserFactory;
 
 import java.io.IOException;
 
+
 public class SaxParserMain {
+
+    static double idf(Map<String,Integer> dictionaire, String m){
+        double frac=WikiHandler.nbId/dictionaire.get(m);
+        return java.lang.Math.log10(frac);
+    }
+
+    // static void term_freq(Map<String,Integer> dictionnaire, WikiHandler wiki) throws IOException{
+    //     //lire page par page 
+    //     Map<Integer,Map<String, Integer>> tf= new HashMap<>();
+    //     tf.put(1, new HashMap<>());
+        
+    //     BufferedReader objReader = new BufferedReader(new FileReader("../mywiki.xml"));
+    //     String strCurrentLine;
+    //     //pour chaque page de notrer wiki
+    //     for(int i=0; i<wiki.getWebsite().pageList.size(); i++ ){
+    //         //pour chaque mot du dictionnaire 
+    //         for (Map.Entry<String,Integer> entry : dictionnaire.entrySet()) {
+    //             String contenu_page =wiki.getWebsite().pageList.get(i).getText();
+    //             entry.getValue();
+
+    //         }
+    //     }
+    //         String page =wiki.getWebsite().pageList.get(i).getText();
+        
+    //     while ((strCurrentLine = objReader.readLine()) != null) {
+            
+    //     }
+
+    // }
+    
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         System.setProperty("jdk.xml.totalEntitySizeLimit", String.valueOf(Integer.MAX_VALUE));
@@ -58,6 +93,10 @@ public class SaxParserMain {
                 Dictionnaire.put(keyValue[0],Integer.parseInt(keyValue[1]));
             }
         }
+
+        //coeef idf a bouger dans le main 
+        // double coefidf=idf(Dictionnaire, "cinq");
+        // System.out.println(coefidf);
     }
 
 }

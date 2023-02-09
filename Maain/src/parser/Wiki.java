@@ -3,7 +3,7 @@ package parser;
 import java.util.List;
 
 public class Wiki {
-    private List<Wiki.WikiPage> pageList;
+    public List<Wiki.WikiPage> pageList;
     public void setPageList(List<Wiki.WikiPage> pageList) {
         this.pageList = pageList;
     }
@@ -12,7 +12,7 @@ public class Wiki {
         return this.pageList;
     }
 
-    protected static class WikiPage {
+    public static class WikiPage {
         private String title;
         private String text;
         public int id;
