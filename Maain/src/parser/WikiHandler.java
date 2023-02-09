@@ -16,7 +16,7 @@ public class WikiHandler extends DefaultHandler{
     private static final String TITLE = "title";
     private static final String TEXT = "text";
 
-    private static int nbId=0;
+    public static int nbId=0;
     private Wiki website;
     private StringBuilder elementValue;
     private PrintWriter pw;
@@ -33,7 +33,7 @@ public class WikiHandler extends DefaultHandler{
     @Override
     public void startDocument() throws SAXException {
         website = new Wiki();
-        File file = new File("mywiki.xml");
+        File file = new File("/Users/harmonysimon-duchatel/M2/maain/maain_moteurrecherche_wikipedia/mywiki.xml");
         if (!file.exists()) {
             try {
                 file.createNewFile();
