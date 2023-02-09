@@ -32,8 +32,10 @@ public class SaxParserMain {
                 saxParser.parse(args[0], wikiHandler);
             }
         }
+
         //Dictionnaire
         File file = new File("Dictionnaire.txt");
+        Map<String,Integer> Dictionnaire = new TreeMap<>() ;
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -41,14 +43,21 @@ public class SaxParserMain {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            BufferedWriter dictioBuff = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+            Dictionnaire = Dictionnary.makeDictionnary();
+            for(Map.Entry<String,Integer> entry: Dictionnaire.entrySet()){
+                dictioBuff.write(entry.getKey() + " " + entry.getValue() +"\n");
+            }
+            dictioBuff.close();
         }
-        BufferedWriter dictioBuff = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-        Map<String,Integer> Dictionnaire = WordCounter.wordCounter();
-        for(Map.Entry<String,Integer> entry: Dictionnaire.entrySet()){
-            dictioBuff.write(entry.getKey() + " " + entry.getValue() +"\n");
-            System.out.println("Cle "+entry.getKey()+" Valeur "+ entry.getValue());
+        else{
+            Scanner sc = new Scanner(file);
+            while(sc.hasNextLine()){
+                String line = sc.nextLine();
+                String[] keyValue  = line.split(" ");
+                Dictionnaire.put(keyValue[0],Integer.parseInt(keyValue[1]));
+            }
         }
-        dictioBuff.close();
     }
 
 }

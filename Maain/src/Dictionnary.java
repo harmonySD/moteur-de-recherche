@@ -1,5 +1,3 @@
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 
@@ -7,18 +5,17 @@ import java.io.*;
 import java.util.*;
 
 
-public class WordCounter extends DefaultHandler {
+public class Dictionnary extends DefaultHandler {
     //Properties props = new Properties();
     //props.load(IOUtils.readerFromString("StanfordCoreNLP-french.properties"));
     //StanfordCoreNLP corenlp = new StanfordCoreNLP(props);
 
-    private static SortedSet<Map.Entry<String,Integer>> treemap = new TreeSet<>();
     private static final int ARBITRARYNUMBEROFWORDS = 20000;
     private static final HashSet<String> IgnoredWords = new HashSet<>(Arrays.asList("le", "la", "les", "à", "de", "des"
             , "du", "sous", "sur", "dans", "ton", "tu", "je", "il", "nous", "vous", "ils", "elles", "elle", "on", "tous"
-            , "tout", "et", "ou", "où", "aux","au","du","que","quel","quelle"));
+            , "tout", "et", "ou", "où", "aux","au","du","que","quel","quelle","a"));
 
-    public static Map<String,Integer> wordCounter() throws IOException {
+    public static Map<String,Integer> makeDictionnary() throws IOException {
         Map<String, Integer> alphabeticallySorted = new TreeMap<>();
         BufferedReader objReader = new BufferedReader(new FileReader("./mywiki.xml"));
         Map<String,Integer> tmpHashMap = new HashMap<>();
@@ -50,11 +47,11 @@ public class WordCounter extends DefaultHandler {
                 }
             }
         }
-        treemap = entriesSortedByValues(tmpHashMap);
+        SortedSet<Map.Entry<String, Integer>> treemap = entriesSortedByValues(tmpHashMap);
 
         //https://stackoverflow.com/questions/5648336/how-select-first-n-items-in-java-treemap
         int count =0;
-        for(Map.Entry<String,Integer> entry:treemap){
+        for(Map.Entry<String,Integer> entry: treemap){
             if(count>=ARBITRARYNUMBEROFWORDS){
                 break;
             }
@@ -63,6 +60,7 @@ public class WordCounter extends DefaultHandler {
         }
         return alphabeticallySorted;
     }
+
     static <K,V extends Comparable<? super V>>
     SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
         SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
