@@ -247,23 +247,30 @@ public class WikiHandler extends DefaultHandler{
                     matcher.appendReplacement(sb, "[[" + mapIdToTitle.get(title) + "]]");
                 }
                 matcher.appendTail(sb);
-                if(!sb.toString().equals("")) {
+                if (s.length()<999){
+                    // System.out.println("page trop courte !");
+                }else{
+                    if(!sb.toString().equals("")) {
                     System.out.println("je pw");
                     System.out.println("title : "+n.getTitle());
                     website.getAllPageList().add(new Wiki.WikiPage());
                     latestAllPage().setTitle(n.getTitle());
                     latestAllPage().setText(sb.toString().toLowerCase());
                     pw.println("<title>" + n.getTitle() + "</title>\n"  + "<text>" + sb.toString().toLowerCase() + "</text>");
-                }
-                if (s.length()<999){
-                    // System.out.println("page trop courte !");
-                }else{
-                    if(!s.isBlank()) {
-                        System.out.println("je pw2");
-                        System.out.println("title : "+n.getTitle());
-                        pw.println("<title>" + n.getTitle() + "</title>\n"  + "<text>" + s.toLowerCase() + "</text>");
                     }
                 }
+                // if (s.length()<999){
+                //     // System.out.println("page trop courte !");
+                // }else{
+                //     if(!s.isBlank()) {
+                //         // System.out.println("je pw2");
+                //         // System.out.println("title : "+n.getTitle());
+                //         website.getAllPageList().add(new Wiki.WikiPage());
+                //         latestAllPage().setTitle(n.getTitle());
+                //         latestAllPage().setText(sb.toString().toLowerCase());
+                //         pw.println("<title>" + n.getTitle() + "</title>\n"  + "<text>" + s.toLowerCase() + "</text>");
+                //     }
+                // }
             }
         }
     }
