@@ -9,10 +9,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.plaf.synth.SynthEditorPaneUI;
-
 public class WikiHandler extends DefaultHandler{
-    private static final Map<String, Integer> titleID = new HashMap<>();
+    private static Map<String, Integer> mapIdToTitle = new HashMap<>();
     private static final String WIKIS = "mediawiki";
     private static final String PAGE = "page";
     private static final String TITLE = "title";
@@ -57,6 +55,28 @@ public class WikiHandler extends DefaultHandler{
             System.out.println("coucou");
         }
 
+        // Remise en mémoire de mapIdToTitle.
+        File map = new File("IDMappedToTitle.txt");
+        if(map.exists()) {
+            try {
+                FileInputStream fileInputStream
+                        = new FileInputStream(
+                        map);
+
+                ObjectInputStream objectInputStream
+                        = new ObjectInputStream(fileInputStream);
+
+                mapIdToTitle = (Map<String, Integer>) objectInputStream.readObject();
+
+                objectInputStream.close();
+                fileInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         // try {
         //     pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())));
         // } catch (IOException e) {
@@ -84,7 +104,7 @@ public class WikiHandler extends DefaultHandler{
             ObjectOutputStream objectOutputStream
                     = new ObjectOutputStream(fileOutputStream);
 
-            objectOutputStream.writeObject(titleID);
+            objectOutputStream.writeObject(mapIdToTitle);
 
             objectOutputStream.close();
             fileOutputStream.close();
@@ -197,8 +217,8 @@ public class WikiHandler extends DefaultHandler{
                 nbId++;
                 nbwikipage++;
                 // Set the ID mapped to the article title if it does not already exist.
-                titleID.computeIfAbsent(n.getTitle(), k -> nbId);
-                n.setId(titleID.get(n.getTitle()));
+                mapIdToTitle.computeIfAbsent(n.getTitle(), k -> nbId);
+                n.setId(mapIdToTitle.get(n.getTitle()));
 
                 // Removes [[Mot_clé:titre…
                 String s = n.getText();
@@ -234,11 +254,11 @@ public class WikiHandler extends DefaultHandler{
                 StringBuilder sb = new StringBuilder();
                 while (matcher.find()) {
                     String title = matcher.group(0).substring(2, matcher.group(0).length()-2);
-                    if(!titleID.containsKey(title)) {
+                    if(!mapIdToTitle.containsKey(title)) {
                         nbId++;
-                        titleID.put(title, nbId);
+                        mapIdToTitle.put(title, nbId);
                     }
-                    matcher.appendReplacement(sb, "[[" + titleID.get(title) + "]]");
+                    matcher.appendReplacement(sb, "[[" + mapIdToTitle.get(title) + "]]");
                 }
                 matcher.appendTail(sb);
                 if(!sb.toString().equals("")) {
