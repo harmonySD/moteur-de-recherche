@@ -42,6 +42,7 @@ public class WikiHandler extends DefaultHandler{
             try {
                 file.createNewFile();
                 pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())));
+                pw.print("<corpus>\n");
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -71,6 +72,7 @@ public class WikiHandler extends DefaultHandler{
         //     System.out.println(website.allPageList.get(i).title);
         // }
         if(again==false){
+            pw.print("</corpus>");
             pw.close();
         }
         // Serialization of the map for next steps.
@@ -215,7 +217,7 @@ public class WikiHandler extends DefaultHandler{
                 s = s.replaceAll("\\(|\\)","");
                 s = s.replaceAll("=+.*=","");
                 // Removes all punctuation signs.
-                s = s.replaceAll("\\?|!|\\.|,|:|;|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«"," ");
+                s = s.replaceAll("\\?|!|\\.|,|<|>:|;|&|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«"," ");
                 // Removes all external links.
                 s = s.replaceAll("(<.*>)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
