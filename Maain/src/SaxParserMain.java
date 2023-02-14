@@ -39,6 +39,7 @@ public class SaxParserMain {
     //         //pour chaque mot du dictionnaire 
     //         for (Map.Entry<String,Integer> entry : dictionnaire.entrySet()) {
     //             String contenu_page =wiki.getWebsite().pageList.get(i).getText();
+    //             contenu_page.
     //             entry.getValue();
 
     //         }
@@ -52,6 +53,9 @@ public class SaxParserMain {
     // }
     
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+        //wiki
+        // File filewiki = new File("mywiki.xml");
+
         SAXParserFactory factory = SAXParserFactory.newInstance();
         System.setProperty("jdk.xml.totalEntitySizeLimit", String.valueOf(Integer.MAX_VALUE));
         SAXParser saxParser = factory.newSAXParser();
@@ -63,8 +67,8 @@ public class SaxParserMain {
         }else {
             if(args.length==0){
                 System.out.println(" Ou est le chemin du fichier a traiter ? 🤨");
-            }else{
-                saxParser.parse(args[0], wikiHandler);
+            // }else{
+            //     saxParser.parse(args[0], wikiHandler);
             }
         }
 
@@ -95,8 +99,8 @@ public class SaxParserMain {
         }
 
         //coeef idf a bouger dans le main 
-        // double coefidf=idf(Dictionnaire, "cinq");
-        // System.out.println(coefidf);
+        double coefidf=idf(Dictionnaire, "cinq");
+        System.out.println("idf : "+coefidf);
     }
 
 }

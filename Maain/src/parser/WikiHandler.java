@@ -9,17 +9,22 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.plaf.synth.SynthEditorPaneUI;
+
 public class WikiHandler extends DefaultHandler{
     private static final Map<String, Integer> titleID = new HashMap<>();
     private static final String WIKIS = "mediawiki";
     private static final String PAGE = "page";
     private static final String TITLE = "title";
     private static final String TEXT = "text";
+    private static final String ID = "id";
 
     public static int nbId=0;
-    private Wiki website;
+    public static int nbwikipage=0;
+    private static Wiki website;
     private StringBuilder elementValue;
     private PrintWriter pw;
+    private boolean again=false;
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
@@ -37,23 +42,38 @@ public class WikiHandler extends DefaultHandler{
         if (!file.exists()) {
             try {
                 file.createNewFile();
+                pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())));
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+        }else{
+            //le fichier existe il a donc deja etet paerser
+            //on veut donc juste re remplir les structures ...
+             again=true;
+            //  website.setPageList(new ArrayList<>());
+            // website.setAllPageList(new ArrayList<>());
+            // website.setPageList(new ArrayList<>());
+            System.out.println("coucou");
         }
 
-        try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // try {
+        //     pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())));
+        // } catch (IOException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
     }
     @Override
     public void endDocument() throws SAXException{
-        System.out.println("il me reste "+ nbId+ " pages");
-        pw.close();
+        System.out.println("il me reste "+ nbwikipage+ " pages");
+        System.out.println(website.allPageList.size());
+        for(int i=0; i<website.allPageList.size();i++){
+            System.out.println(website.allPageList.get(i).title);
+        }
+        if(again==false){
+            pw.close();
+        }
         // Serialization of the map for next steps.
         try {
             FileOutputStream fileOutputStream
@@ -78,16 +98,32 @@ public class WikiHandler extends DefaultHandler{
         switch (qName) {
             case WIKIS:
                 website.setPageList(new ArrayList<>());
+                website.setAllPageList(new ArrayList<>());
                 break;
             case PAGE:
                 website.getPageList().add(new Wiki.WikiPage());
+                // website.getAllPageList().add(new Wiki.WikiPage());
                 break;
             case TITLE:
+            System.out.println("3TIITITITITI");
+                if (again==true){
+                    website.setPageList(new ArrayList<>());
+                    website.setAllPageList(new ArrayList<>());
+                    website.getPageList().add(new Wiki.WikiPage());
+                    // website.getAllPageList().add(new Wiki.WikiPage());
+                }
                 elementValue = new StringBuilder();
+                System.out.println("FIN");
                 break;
             case TEXT:
+            System.out.println("tEEEXT");
                 elementValue = new StringBuilder();
                 break;
+            case ID: 
+                System.out.println("ID");
+                break;
+            default: 
+                System.out.println("CROTTE");
         }
     }
 
@@ -95,43 +131,80 @@ public class WikiHandler extends DefaultHandler{
     public void endElement(String uri, String localName, String qName) throws SAXException {
         switch (qName) {
             case TITLE:
+            System.out.println("TJTJT");
                 latestPage().setTitle(elementValue.toString());
+                // latestAllPage().setTitle(elementValue.toString());
+                System.out.println("TJTJT");
                 break;
             case TEXT:
+                
                 latestPage().setText(elementValue.toString());
-                try {
-                    writeToFile(website.getPageList(),pw);
-                    //remettre a 0 la liste pour afficher que une fois chaque poage dans le fichier
-                    //et ne pas tout stocker
-                    website.setPageList(new ArrayList<>());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                // latestPage().setText(elementValue.toString());
+                if(again==false){
+                    try {
+                        writeToFile(website.getPageList(),pw);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    try {
+                        rempParam(website.getPageList(), pw);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+            
+
+                //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
+                //et ne pas tout stocker
+                website.setPageList(new ArrayList<>());
+                break;
+            case ID: 
                 break;
         }
     }
 
-    private Wiki.WikiPage latestPage() {
+    private static Wiki.WikiPage latestPage() {
         List<Wiki.WikiPage> pageList = website.getPageList();
         int latestPageIndex = pageList.size() - 1;
         return pageList.get(latestPageIndex);
+    }
+    private static Wiki.WikiPage latestAllPage() {
+        List<Wiki.WikiPage> allpageList = website.getAllPageList();
+        int latestallPageIndex = allpageList.size() - 1;
+        return allpageList.get(latestallPageIndex);
     }
 
     public Wiki getWebsite() {
         return website;
     }
 
+    private static void rempParam(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
+        Iterator<Wiki.WikiPage> it = list.iterator();
+        list.get(list.size()-1);
+        while (it.hasNext()) {
+            Wiki.WikiPage n = it.next();
+            System.out.println(n.getTitle());
+            System.out.println(n.getText());
+            // website.getAllPageList().add(new Wiki.WikiPage());
+            // latestAllPage().setTitle(n.getTitle());
+            // latestAllPage().setText(n.getText().toLowerCase());
+        }
+    }
 
     private static void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Pattern p;
         Matcher m;
         p = Pattern.compile("aér*|avion");
         Iterator<Wiki.WikiPage> it = list.iterator();
+        list.get(list.size()-1);
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
+            // Wiki.WikiPage n =list.get(list.size()-1);
             m = p.matcher(n.getText().toLowerCase());
             if(m.find()){
                 nbId++;
+                nbwikipage++;
                 // Set the ID mapped to the article title if it does not already exist.
                 titleID.computeIfAbsent(n.getTitle(), k -> nbId);
                 n.setId(titleID.get(n.getTitle()));
@@ -178,6 +251,9 @@ public class WikiHandler extends DefaultHandler{
                 }
                 matcher.appendTail(sb);
                 if(!sb.toString().equals("")) {
+                    // website.getAllPageList().add(new Wiki.WikiPage());
+                    // latestAllPage().setTitle(n.getTitle());
+                    // latestAllPage().setText(sb.toString().toLowerCase());
                     pw.println("<title>" + n.getTitle() + "</title>\n" + "<id>" + n.id + "</id>\n" + "<text>" + sb.toString().toLowerCase() + "</text>");
                 }
                 if (s.length()<999){

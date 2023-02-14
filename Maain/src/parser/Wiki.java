@@ -4,16 +4,23 @@ import java.util.List;
 
 public class Wiki {
     public List<Wiki.WikiPage> pageList;
+    public List<Wiki.WikiPage> allPageList;
     public void setPageList(List<Wiki.WikiPage> pageList) {
         this.pageList = pageList;
+    }
+    public void setAllPageList(List<Wiki.WikiPage> allPageList) {
+        this.allPageList = allPageList;
     }
 
     public List<Wiki.WikiPage> getPageList() {
         return this.pageList;
     }
+    public List<Wiki.WikiPage> getAllPageList() {
+        return this.allPageList;
+    }
 
     public static class WikiPage {
-        private String title;
+        public String title;
         private String text;
         public int id;
 
