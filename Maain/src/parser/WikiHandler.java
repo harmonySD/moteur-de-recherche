@@ -76,14 +76,17 @@ public class WikiHandler extends DefaultHandler{
     }
     @Override
     public void endDocument() throws SAXException{
+        if(again==false){
+            pw.print("</corpus>");
+            pw.close();
+        }else{
+            nbId=website.allPageList.size();
+        }
         System.out.println("il me reste "+website.allPageList.size()+" pages");
         // for(int i=0; i<website.allPageList.size();i++){
         //     System.out.println(website.allPageList.get(i).title);
         // }
-        if(again==false){
-            pw.print("</corpus>");
-            pw.close();
-        }
+        
         // Serialization of the map for next steps.
         try {
             FileOutputStream fileOutputStream

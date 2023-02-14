@@ -22,10 +22,11 @@ import java.io.IOException;
 
 public class SaxParserMain {
 
-    // static double idf(Map<String,Integer> dictionaire, String m){
-    //     double frac=WikiHandler.nbId/dictionaire.get(m);
-    //     return java.lang.Math.log10(frac);
-    // }
+    static double idf(Map<String,Integer> dictionaire, String m){
+        System.out.println("nbId"+WikiHandler.nbId);
+        double frac=WikiHandler.nbId/dictionaire.get(m);
+        return java.lang.Math.log10(frac);
+    }
 
     // static void term_freq(Map<String,Integer> dictionnaire, WikiHandler wiki) throws IOException{
     //     //lire page par page 
@@ -98,9 +99,9 @@ public class SaxParserMain {
             }
         }
 
-        //coeef idf a bouger dans le main 
-        // double coefidf=idf(Dictionnaire, "cinq");
-        // System.out.println("idf : "+coefidf);
+        // coeef idf a bouger dans le main 
+        double coefidf=idf(Dictionnaire, "cinq");
+        System.out.println("idf : "+coefidf);
     }
 
 }
