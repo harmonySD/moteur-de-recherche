@@ -80,13 +80,15 @@ public class WikiHandler extends DefaultHandler{
             pw.print("</corpus>");
             pw.close();
         }else{
-            nbId=website.allPageList.size();
+            nbwikipage=website.allPageList.size();
         }
+        
         System.out.println("il me reste "+website.allPageList.size()+" pages");
+        System.out.println("nbwikipage "+nbwikipage);
         // for(int i=0; i<website.allPageList.size();i++){
         //     System.out.println(website.allPageList.get(i).title);
         // }
-        
+
         // Serialization of the map for next steps.
         try {
             FileOutputStream fileOutputStream
@@ -142,7 +144,6 @@ public class WikiHandler extends DefaultHandler{
                 if(again==false){
                     try {
                         writeToFile(website.getPageList(),pw);
-                        System.out.println("toto"+website.getPageList().iterator().next().title);
                         //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
                         //et ne pas tout stocker
                         website.setPageList(new ArrayList<>());
@@ -200,17 +201,16 @@ public class WikiHandler extends DefaultHandler{
         list.get(list.size()-1);
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
-            // Wiki.WikiPage n =list.get(list.size()-1);
             m = p.matcher(n.getText().toLowerCase());
             if(m.find()){
                 nbId++;
-                nbwikipage++;
                 // Set the ID mapped to the article title if it does not already exist.
                 mapIdToTitle.computeIfAbsent(n.getTitle(), k -> nbId);
                 n.setId(mapIdToTitle.get(n.getTitle()));
 
                 // Removes [[Mot_clé:titre…
                 String s = n.getText();
+                String t = n.getTitle();
                 s=s.replaceAll("(http|ftp|https):\\/\\/([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])\n","");
                 s= s.replaceAll("\\{\\{.+| \\|.*}*","");
                 s = s.replaceAll("\\[\\[(\\[0-9]*)]]","");
@@ -226,12 +226,14 @@ public class WikiHandler extends DefaultHandler{
                 s = s.replaceAll("\\(|\\)","");
                 s = s.replaceAll("=+.*=","");
                 // Removes all punctuation signs.
-                s = s.replaceAll("\\?|!|\\.|,|<|>:|;|&|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«"," ");
+                s = s.replaceAll("\\?|!|\\.|,|<|>|:|;|&|('')+|-|%|=|&|\\$|\\€|_|\\+|\\*|\\||`|»|«"," ");
+                t = t.replaceAll("\\?|!|\\.|,|<|>|:|;|&|('')+|-|%|=|&|\\$|\\€|_|\\+|\\*|\\||`|»|«"," ");
                 // Removes all external links.
                 s = s.replaceAll("(<.*>)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
                 s = s.replaceAll("l’|l'|d’|d'|j'|s'","");
+                t = t.replaceAll("l’|l'|d’|d'|j'|s'","");
                 s = s.replaceAll(" ","");
                 s=s.replaceAll("–"," ");
                 s=s.replaceAll("—","");
@@ -253,27 +255,14 @@ public class WikiHandler extends DefaultHandler{
                 if (s.length()<999){
                     // System.out.println("page trop courte !");
                 }else{
+                    nbwikipage++;
                     if(!sb.toString().equals("")) {
-                    System.out.println("je pw");
-                    System.out.println("title : "+n.getTitle());
                     website.getAllPageList().add(new Wiki.WikiPage());
-                    latestAllPage().setTitle(n.getTitle());
+                    latestAllPage().setTitle(t);
                     latestAllPage().setText(sb.toString().toLowerCase());
-                    pw.println("<title>" + n.getTitle() + "</title>\n"  + "<text>" + sb.toString().toLowerCase() + "</text>");
+                    pw.println("<title>" + t + "</title>\n"  + "<text>" + sb.toString().toLowerCase() + "</text>");
                     }
                 }
-                // if (s.length()<999){
-                //     // System.out.println("page trop courte !");
-                // }else{
-                //     if(!s.isBlank()) {
-                //         // System.out.println("je pw2");
-                //         // System.out.println("title : "+n.getTitle());
-                //         website.getAllPageList().add(new Wiki.WikiPage());
-                //         latestAllPage().setTitle(n.getTitle());
-                //         latestAllPage().setText(sb.toString().toLowerCase());
-                //         pw.println("<title>" + n.getTitle() + "</title>\n"  + "<text>" + s.toLowerCase() + "</text>");
-                //     }
-                // }
             }
         }
     }

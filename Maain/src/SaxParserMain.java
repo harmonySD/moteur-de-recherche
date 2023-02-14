@@ -23,8 +23,8 @@ import java.io.IOException;
 public class SaxParserMain {
 
     static double idf(Map<String,Integer> dictionaire, String m){
-        System.out.println("nbId"+WikiHandler.nbId);
-        double frac=WikiHandler.nbId/dictionaire.get(m);
+        System.out.println("nbwikipage dans idf"+WikiHandler.nbwikipage);
+        double frac=WikiHandler.nbwikipage/dictionaire.get(m);
         return java.lang.Math.log10(frac);
     }
 
