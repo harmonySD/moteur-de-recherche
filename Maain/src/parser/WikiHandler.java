@@ -67,9 +67,9 @@ public class WikiHandler extends DefaultHandler{
     public void endDocument() throws SAXException{
         System.out.println("il me reste "+ nbwikipage+ " pages");
         System.out.println(website.allPageList.size());
-        for(int i=0; i<website.allPageList.size();i++){
-            System.out.println(website.allPageList.get(i).title);
-        }
+        // for(int i=0; i<website.allPageList.size();i++){
+        //     System.out.println(website.allPageList.get(i).title);
+        // }
         if(again==false){
             pw.close();
         }
