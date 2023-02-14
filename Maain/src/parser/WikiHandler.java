@@ -17,7 +17,6 @@ public class WikiHandler extends DefaultHandler{
     private static final String PAGE = "page";
     private static final String TITLE = "title";
     private static final String TEXT = "text";
-    private static final String ID = "id";
 
     public static int nbId=0;
     public static int nbwikipage=0;
@@ -105,7 +104,6 @@ public class WikiHandler extends DefaultHandler{
                 // website.getAllPageList().add(new Wiki.WikiPage());
                 break;
             case TITLE:
-            System.out.println("3TIITITITITI");
                 if (again==true){
                     website.setPageList(new ArrayList<>());
                     website.setAllPageList(new ArrayList<>());
@@ -113,17 +111,12 @@ public class WikiHandler extends DefaultHandler{
                     // website.getAllPageList().add(new Wiki.WikiPage());
                 }
                 elementValue = new StringBuilder();
-                System.out.println("FIN");
                 break;
             case TEXT:
-            System.out.println("tEEEXT");
                 elementValue = new StringBuilder();
                 break;
-            case ID: 
-                System.out.println("ID");
-                break;
             default: 
-                System.out.println("CROTTE");
+                break;
         }
     }
 
@@ -131,13 +124,10 @@ public class WikiHandler extends DefaultHandler{
     public void endElement(String uri, String localName, String qName) throws SAXException {
         switch (qName) {
             case TITLE:
-            System.out.println("TJTJT");
                 latestPage().setTitle(elementValue.toString());
                 // latestAllPage().setTitle(elementValue.toString());
-                System.out.println("TJTJT");
                 break;
             case TEXT:
-                
                 latestPage().setText(elementValue.toString());
                 // latestPage().setText(elementValue.toString());
                 if(again==false){
@@ -159,8 +149,7 @@ public class WikiHandler extends DefaultHandler{
                 //et ne pas tout stocker
                 website.setPageList(new ArrayList<>());
                 break;
-            case ID: 
-                break;
+            
         }
     }
 
@@ -184,11 +173,11 @@ public class WikiHandler extends DefaultHandler{
         list.get(list.size()-1);
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
-            System.out.println(n.getTitle());
-            System.out.println(n.getText());
-            // website.getAllPageList().add(new Wiki.WikiPage());
-            // latestAllPage().setTitle(n.getTitle());
-            // latestAllPage().setText(n.getText().toLowerCase());
+            // System.out.println(n.getTitle());
+            // System.out.println(n.getText());
+            website.getAllPageList().add(new Wiki.WikiPage());
+            latestAllPage().setTitle(n.getTitle());
+            latestAllPage().setText(n.getText().toLowerCase());
         }
     }
 
@@ -228,7 +217,7 @@ public class WikiHandler extends DefaultHandler{
                 // Removes all punctuation signs.
                 s = s.replaceAll("\\?|!|\\.|,|:|;|('')+|-|%|=|\\$|\\€|_|\\+|\\*|\\||`|»|«"," ");
                 // Removes all external links.
-                //s = s.replaceAll("(<.*>)","");
+                s = s.replaceAll("(<.*>)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
                 //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
                 s = s.replaceAll("l’|l'|d’|d'|j'|s'","");
@@ -251,17 +240,16 @@ public class WikiHandler extends DefaultHandler{
                 }
                 matcher.appendTail(sb);
                 if(!sb.toString().equals("")) {
-                    // website.getAllPageList().add(new Wiki.WikiPage());
-                    // latestAllPage().setTitle(n.getTitle());
-                    // latestAllPage().setText(sb.toString().toLowerCase());
-                    pw.println("<title>" + n.getTitle() + "</title>\n" + "<id>" + n.id + "</id>\n" + "<text>" + sb.toString().toLowerCase() + "</text>");
+                    website.getAllPageList().add(new Wiki.WikiPage());
+                    latestAllPage().setTitle(n.getTitle());
+                    latestAllPage().setText(sb.toString().toLowerCase());
+                    pw.println("<title>" + n.getTitle() + "</title>\n"  + "<text>" + sb.toString().toLowerCase() + "</text>");
                 }
                 if (s.length()<999){
                     // System.out.println("page trop courte !");
                 }else{
                     if(!s.isBlank()) {
-                        pw.println("<title>" + n.getTitle() + "</title>\n" + "<id>" +
-                                n.id + "</id>\n" + "<text>" + s.toLowerCase() + "</text>");
+                        pw.println("<title>" + n.getTitle() + "</title>\n"  + "<text>" + s.toLowerCase() + "</text>");
                     }
                 }
             }
