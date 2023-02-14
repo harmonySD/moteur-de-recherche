@@ -49,10 +49,7 @@ public class WikiHandler extends DefaultHandler{
             //le fichier existe il a donc deja etet paerser
             //on veut donc juste re remplir les structures ...
              again=true;
-            //  website.setPageList(new ArrayList<>());
-            // website.setAllPageList(new ArrayList<>());
-            // website.setPageList(new ArrayList<>());
-            System.out.println("coucou");
+            website.setAllPageList(new ArrayList<>());
         }
 
         // Remise en mémoire de mapIdToTitle.
@@ -76,18 +73,10 @@ public class WikiHandler extends DefaultHandler{
                 throw new RuntimeException(e);
             }
         }
-
-        // try {
-        //     pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())));
-        // } catch (IOException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // }
     }
     @Override
     public void endDocument() throws SAXException{
-        System.out.println("il me reste "+ nbwikipage+ " pages");
-        System.out.println(website.allPageList.size());
+        System.out.println("il me reste "+website.allPageList.size()+" pages");
         // for(int i=0; i<website.allPageList.size();i++){
         //     System.out.println(website.allPageList.get(i).title);
         // }
@@ -123,14 +112,11 @@ public class WikiHandler extends DefaultHandler{
                 break;
             case PAGE:
                 website.getPageList().add(new Wiki.WikiPage());
-                // website.getAllPageList().add(new Wiki.WikiPage());
                 break;
             case TITLE:
                 if (again==true){
                     website.setPageList(new ArrayList<>());
-                    website.setAllPageList(new ArrayList<>());
                     website.getPageList().add(new Wiki.WikiPage());
-                    // website.getAllPageList().add(new Wiki.WikiPage());
                 }
                 elementValue = new StringBuilder();
                 break;
@@ -147,29 +133,31 @@ public class WikiHandler extends DefaultHandler{
         switch (qName) {
             case TITLE:
                 latestPage().setTitle(elementValue.toString());
-                // latestAllPage().setTitle(elementValue.toString());
                 break;
             case TEXT:
                 latestPage().setText(elementValue.toString());
-                // latestPage().setText(elementValue.toString());
                 if(again==false){
                     try {
                         writeToFile(website.getPageList(),pw);
+                        System.out.println("toto"+website.getPageList().iterator().next().title);
+                        //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
+                        //et ne pas tout stocker
+                        website.setPageList(new ArrayList<>());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }else{
                     try {
                         rempParam(website.getPageList(), pw);
+                        
+                //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
+                //et ne pas tout stocker
+                website.setPageList(new ArrayList<>());
+                break;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-            
-
-                //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
-                //et ne pas tout stocker
-                website.setPageList(new ArrayList<>());
                 break;
             
         }
@@ -195,8 +183,6 @@ public class WikiHandler extends DefaultHandler{
         list.get(list.size()-1);
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
-            // System.out.println(n.getTitle());
-            // System.out.println(n.getText());
             website.getAllPageList().add(new Wiki.WikiPage());
             latestAllPage().setTitle(n.getTitle());
             latestAllPage().setText(n.getText().toLowerCase());
@@ -262,6 +248,8 @@ public class WikiHandler extends DefaultHandler{
                 }
                 matcher.appendTail(sb);
                 if(!sb.toString().equals("")) {
+                    System.out.println("je pw");
+                    System.out.println("title : "+n.getTitle());
                     website.getAllPageList().add(new Wiki.WikiPage());
                     latestAllPage().setTitle(n.getTitle());
                     latestAllPage().setText(sb.toString().toLowerCase());
@@ -271,6 +259,8 @@ public class WikiHandler extends DefaultHandler{
                     // System.out.println("page trop courte !");
                 }else{
                     if(!s.isBlank()) {
+                        System.out.println("je pw2");
+                        System.out.println("title : "+n.getTitle());
                         pw.println("<title>" + n.getTitle() + "</title>\n"  + "<text>" + s.toLowerCase() + "</text>");
                     }
                 }
