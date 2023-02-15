@@ -43,9 +43,11 @@ public class SaxParserMain {
                 while(page.getText().indexOf(word)!=-1){
                     count++;
                 }
-                //mettre resultat dans mini hashmap
-                double miniTF=1+java.lang.Math.log10(count);
-                mot_apparition.put(word, miniTF);
+                if(count!=0){
+                    //mettre resultat dans mini hashmap
+                    double miniTF=1+java.lang.Math.log10(count);
+                    mot_apparition.put(word, miniTF);
+                }
             }
             tf.put(page.getTitle(), mot_apparition);
         }
@@ -68,9 +70,23 @@ public class SaxParserMain {
         }
         return nd;
     }
-    // static void coeff_TF_normalise(Map<String,Double> norme_vecteur, Map<String,Map<String, Double>> tf){
-
-    // }
+    
+    static Map<String,Map<String, Double>> coeff_TF_normalise(Map<String,Double> norme_vecteur, Map<String,Map<String, Double>> tf){
+        Map<String,Map<String, Double>> coef_tf= new HashMap<>();
+        for (Map.Entry<String, Map<String,Double>> entry : tf.entrySet()) {
+            String title =entry.getKey();
+            Double nd = norme_vecteur.get(title);
+            Map<String, Double> map = new HashMap<>();
+            for(Map.Entry<String,Double> entry2 : entry.getValue().entrySet()) {
+                Double calcul=entry2.getValue()/nd;
+                map.put(entry2.getKey(), calcul); 
+            }
+            coef_tf.put(title, map);
+        }
+        return coef_tf;
+        
+    }
+    
 
 
     
@@ -124,7 +140,7 @@ public class SaxParserMain {
         double coefidf=idf(Dictionnaire, "cinq");
         System.out.println("idf : "+coefidf);
 
-        term_freq(Dictionnaire, wikiHandler);
+        // term_freq(Dictionnaire, wikiHandler);
     }
 
 }
