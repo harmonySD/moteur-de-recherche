@@ -1,4 +1,5 @@
 //fortement inspirer de https://www.baeldung.com/java-sax-parser
+import org.w3c.dom.events.MouseEvent;
 import org.xml.sax.SAXException;
 import parser.WikiHandler;
 import parser.Wiki.WikiPage;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 import java.security.KeyStore.Entry;
 import java.util.*;
 
+import javax.swing.plaf.synth.SynthEditorPaneUI;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -29,49 +31,58 @@ public class SaxParserMain {
     }
 
     static Map<String,Map<String, Double>> term_freq(Map<String,Integer> dictionnaire, WikiHandler wiki) throws IOException{
-        //mettre title ou id ???
-        //sauvegarder Map<title,map<mot, nb apparition>> 
+        //sauvegader dans Map<mot,map<title,nb apparition>>
         Map<String,Map<String, Double>> tf= new HashMap<>();
         //pour chaque page de notrer wiki
         for(int i=0; i<wiki.getWebsite().getAllPageList().size(); i++ ){
             WikiPage page= wiki.getWebsite().getAllPageList().get(i);
             //pour chaque mot du dictionnaire 
             Map<String, Double> mot_apparition = new HashMap<>();
+            System.out.println(dictionnaire.size());
             for (Map.Entry<String,Integer> entry : dictionnaire.entrySet()) {
+            
                 String word= entry.getKey();
+                System.out.println(word);
                 int count=0; 
-                while(page.getText().indexOf(word)!=-1){
-                    count++;
+                String [] a=page.getText().split(" ");
+                for(int j=0; j<a.length; j++){
+                    // System.out.println(word);
+                    // System.out.println(a[j]);
+                    if(a[j]==word){
+                        System.out.println(word);
+                        count++;
+                    }
                 }
+                // System.out.println(count);
                 if(count!=0){
                     //mettre resultat dans mini hashmap
                     double miniTF=1+java.lang.Math.log10(count);
-                    mot_apparition.put(word, miniTF);
+                    mot_apparition.put(page.getTitle(), miniTF);
+                    tf.put(word, mot_apparition);
                 }
             }
-            tf.put(page.getTitle(), mot_apparition);
         }
+        System.out.println(tf);
         return tf;
     }
 
-    static Map<String,Double> norme_vecteur(Map<String,Map<String,Double>> tf, WikiHandler wiki){
-        //Pour chaque pages d je calcul Nd 
-        //map<title,Nd>
+    static Map<String,Double> norme_vecteur(Map<String,Map<String,Double>> tf){
         Map<String,Double> nd= new HashMap<>();
-        for(int i=0; i<wiki.getWebsite().getAllPageList().size(); i++ ){
-            WikiPage page= wiki.getWebsite().getAllPageList().get(i);
-            //recupere la map <mot, nb apparition> qui correspond au titre du if 
-            Map<String, Double> tf_m = tf.get(page.getTitle());
-            double somme_tf=0;
-            for(Map.Entry<String,Double> entry : tf_m.entrySet()){
-                somme_tf+=Math.pow(entry.getValue(),2);
+        for(Map.Entry<String, Map<String,Double>> entry : tf.entrySet()){
+            for(Map.Entry<String, Double> entry2 : entry.getValue().entrySet()){
+                if(!nd.containsKey(entry2.getKey())){
+                    nd.put(entry2.getKey(), entry2.getValue());
+                }else{
+                    nd.replace(entry2.getKey(), entry2.getValue()+nd.get(entry2.getKey()));
+                }
             }
-            nd.put(page.getTitle(), somme_tf); 
         }
+        System.out.println(nd);
         return nd;
     }
     
     static Map<String,Map<String, Double>> coeff_TF_normalise(Map<String,Double> norme_vecteur, Map<String,Map<String, Double>> tf){
+        System.out.println(norme_vecteur);
         Map<String,Map<String, Double>> coef_tf= new HashMap<>();
         for (Map.Entry<String, Map<String,Double>> entry : tf.entrySet()) {
             String title =entry.getKey();
@@ -86,7 +97,24 @@ public class SaxParserMain {
         return coef_tf;
         
     }
-    
+
+    static Map<String,Map<String, Double>> supp_page_tf_faible(Map<String,Map<String, Double>> tf, Map<String,Map<String, Double>> coeff_tf_norm, Map<String,Integer> dictionaire){
+        // enlever de la list des pages associe au mot 
+        // tf.remove(title)
+        Map<String,Map<String, Double>> liste_page_mot=tf;
+        for (Map.Entry<String, Map<String,Double>> entry : tf.entrySet()) {
+            for(Map.Entry<String,Double> entry2 : entry.getValue().entrySet()) {
+                Double calcul= idf(dictionaire, entry2.getKey());
+                if(calcul>0.2){
+                    liste_page_mot.remove(entry.getKey());
+                }
+            }
+        }
+        return liste_page_mot;
+    }
+
+
+
 
 
     
@@ -140,7 +168,14 @@ public class SaxParserMain {
         double coefidf=idf(Dictionnaire, "cinq");
         System.out.println("idf : "+coefidf);
 
-        // term_freq(Dictionnaire, wikiHandler);
+        //map avec pour chaque mot 
+        // TF
+        //renvoyer map <mot,<title, tf>>
+        Map<String,Map<String, Double>> tf = term_freq(Dictionnaire, wikiHandler);
+        Map<String,Double> normeVect = norme_vecteur(tf);
+        Map<String,Map<String, Double>> tfnorm = coeff_TF_normalise(normeVect, tf);
+        Map<String,Map<String, Double>> list_page_mot_tf= supp_page_tf_faible(tf, tfnorm, Dictionnaire);
+        System.out.println(list_page_mot_tf.size());
     }
 
 }
