@@ -38,22 +38,15 @@ public class SaxParserMain {
             WikiPage page= wiki.getWebsite().getAllPageList().get(i);
             //pour chaque mot du dictionnaire 
             Map<String, Double> mot_apparition = new HashMap<>();
-            System.out.println(dictionnaire.size());
             for (Map.Entry<String,Integer> entry : dictionnaire.entrySet()) {
-            
                 String word= entry.getKey();
-                System.out.println(word);
                 int count=0; 
                 String [] a=page.getText().split(" ");
                 for(int j=0; j<a.length; j++){
-                    // System.out.println(word);
-                    // System.out.println(a[j]);
-                    if(a[j]==word){
-                        System.out.println(word);
+                    if(a[j].equals(word)){
                         count++;
                     }
                 }
-                // System.out.println(count);
                 if(count!=0){
                     //mettre resultat dans mini hashmap
                     double miniTF=1+java.lang.Math.log10(count);
@@ -62,7 +55,6 @@ public class SaxParserMain {
                 }
             }
         }
-        System.out.println(tf);
         return tf;
     }
 
@@ -77,22 +69,20 @@ public class SaxParserMain {
                 }
             }
         }
-        System.out.println(nd);
         return nd;
     }
     
     static Map<String,Map<String, Double>> coeff_TF_normalise(Map<String,Double> norme_vecteur, Map<String,Map<String, Double>> tf){
-        System.out.println(norme_vecteur);
         Map<String,Map<String, Double>> coef_tf= new HashMap<>();
         for (Map.Entry<String, Map<String,Double>> entry : tf.entrySet()) {
-            String title =entry.getKey();
-            Double nd = norme_vecteur.get(title);
+            String word =entry.getKey();
             Map<String, Double> map = new HashMap<>();
             for(Map.Entry<String,Double> entry2 : entry.getValue().entrySet()) {
+                Double nd = norme_vecteur.get(entry2.getKey());
                 Double calcul=entry2.getValue()/nd;
                 map.put(entry2.getKey(), calcul); 
             }
-            coef_tf.put(title, map);
+            coef_tf.put(word, map);
         }
         return coef_tf;
         
@@ -100,13 +90,16 @@ public class SaxParserMain {
 
     static Map<String,Map<String, Double>> supp_page_tf_faible(Map<String,Map<String, Double>> tf, Map<String,Map<String, Double>> coeff_tf_norm, Map<String,Integer> dictionaire){
         // enlever de la list des pages associe au mot 
-        // tf.remove(title)
         Map<String,Map<String, Double>> liste_page_mot=tf;
         for (Map.Entry<String, Map<String,Double>> entry : tf.entrySet()) {
             for(Map.Entry<String,Double> entry2 : entry.getValue().entrySet()) {
-                Double calcul= idf(dictionaire, entry2.getKey());
+                String word_search= entry.getKey();
+                Map<String,Double> TF= coeff_tf_norm.get(word_search);
+                Double coefTF= TF.get(entry2.getKey());
+                Double calcul= idf(dictionaire, entry.getKey())*coefTF;
                 if(calcul>0.2){
-                    liste_page_mot.remove(entry.getKey());
+                    entry.getValue().remove(entry2.getKey());
+                    // liste_page_mot.remove(entry.getKey());
                 }
             }
         }
