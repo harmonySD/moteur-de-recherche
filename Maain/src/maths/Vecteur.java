@@ -12,7 +12,7 @@ public class Vecteur {
     /**
      * Liste contenant les valeurs du vecteur.
      */
-    private List<Float> vecteur;
+    private final List<Float> vecteur;
 
     public Vecteur(){
         this.vecteur = new ArrayList<>();
