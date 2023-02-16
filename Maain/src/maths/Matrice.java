@@ -87,7 +87,7 @@ public class Matrice {
         for(int i = 0; i < n; i++){
             for(int j = this.L.get(i);j < this.L.get(i+1); j++){
                 float valCourante = v.getValueAt(this.I.get(j));
-                float valActualisee = valCourante += this.C.get(j) * u.getValueAt(i);
+                float valActualisee = valCourante + this.C.get(j) * u.getValueAt(i);
                 v.insertValueAt(this.I.get(j), valActualisee);
 
                 if(Objects.equals(this.L.get(i), this.L.get(i + 1))){
