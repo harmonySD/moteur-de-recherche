@@ -1,7 +1,6 @@
 package maths;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,5 +63,9 @@ public class Vecteur {
      */
     public int getNorme(){
         return this.vecteur.size();
+    }
+
+    public Object[] toArray(){
+        return this.vecteur.toArray();
     }
 }

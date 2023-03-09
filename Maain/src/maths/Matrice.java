@@ -14,7 +14,7 @@ import java.util.Objects;
  * Une matrice est composée de :
  *     page0 : liens 35, 8, 50, 12   -> coeff 1/4
  *     page1 : liens 103, 49         -> coeff 1/2
- *     page2 : pas de liens          -> coeff 0.
+ *     page2 : pas de liens          -> coeff 0
  *     page3 : lien vers 12          -> coeff 1
  *
  *  Version CLI :
@@ -57,7 +57,12 @@ public class Matrice {
             this.C.add(1f/pageIdList.size());
         }
         //L = Indice de début de la page.
-        this.L.add(pageIdList.size() + this.L.get(this.L.size()-1));
+
+        int indiceDebutPage = 0;
+        if(this.L.size() != 0){
+            indiceDebutPage =  pageIdList.size() + this.L.get(this.L.size()-1);
+        }
+        this.L.add(indiceDebutPage);
         //I = Liste des id d'article trié.
         this.I.addAll(pageIdList);
     }
@@ -90,10 +95,12 @@ public class Matrice {
                 float valActualisee = valCourante + this.C.get(j) * u.getValueAt(i);
                 v.insertValueAt(this.I.get(j), valActualisee);
 
+                //Passage de A0 à A.
                 if(Objects.equals(this.L.get(i), this.L.get(i + 1))){
                     somme += (1/n)*u.getValueAt(i);
                 }
 
+                //Passage de A à Ag.
                 for(int k = 0; k < n; k++){
                     float val = v.getValueAt(k) + somme;
                     float valEpsilon = (1 - Constantes.epsilon)*val+(Constantes.epsilon/n);
