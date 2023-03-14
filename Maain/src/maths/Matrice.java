@@ -120,25 +120,14 @@ public class Matrice {
      */
     public Vecteur multiplyByVector(Vecteur u){
         Vecteur v = new Vecteur(u.getNorme());
-        final int n = this.L.size()-2; // -2, car L est de taille n + 1.
+        final int n = this.L.size()-1; // -2, car L est de taille n + 1.
         int somme = 0;
         for(int i = 0; i < n; i++){
-            // System.out.println("this.L.get(i)"+this.L.get(i));
-            // System.out.println("this.L.get(i+1)"+(this.L.get(i+1)-1));
-            // System.out.println("size I"+ this.I.size());
-
-            for(int j = this.L.get(i);j < this.L.get(i+1)-1; j++){
-                // System.out.println(j);
-                // System.out.println(this.I.get(j));
-                // // System.out.println(u.getNorme());
-                float valCourante = v.getValueAt(i);
-                // System.out.println("valc"+valCourante);
-                // System.out.println("this.C.get(j)"+this.C.get(j));
-                // System.out.println("this.I.get(j)"+this.I.get(j));
-                // System.out.println("u.getValueAt(this.I.get(j)"+u.getValueAt(this.I.get(j)));
+            for(int j = this.L.get(i);j <= this.L.get(i+1)-1; j++){
+                float valCourante = v.getValueAt(i); 
                 float valActualisee = valCourante + this.C.get(j) * u.getValueAt(this.I.get(j));
-                // System.out.println("valac"+valActualisee);
-                v.insertValueAt(this.I.get(j), valActualisee);
+    
+                v.insertValueAt(i, valActualisee);
 
                 //Passage de A0 à A.
                 if(Objects.equals(this.L.get(i), this.L.get(i + 1))){
