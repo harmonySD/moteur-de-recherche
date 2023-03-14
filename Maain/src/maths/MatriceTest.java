@@ -1,7 +1,6 @@
 package maths;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,15 +12,17 @@ class MatriceTest {
         matrice = new Matrice();
         List<Integer> page0 = Arrays.asList(35, 8, 50, 12);
         matrice.insertPage(page0);
+        System.out.println("ok1");
 
         List<Integer> page1 = Arrays.asList(103, 49);
         matrice.insertPage(page1);
-
+        System.out.println("ok2");
         List<Integer> page2 = Arrays.asList();
         matrice.insertPage(page2);
-
+        System.out.println("ok3");
         List<Integer> page3 = Arrays.asList(12);
         matrice.insertPage(page3);
+        System.out.println("ok4");
     }
 
     @org.junit.jupiter.api.AfterEach

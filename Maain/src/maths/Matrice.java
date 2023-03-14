@@ -24,25 +24,28 @@ import java.util.Objects;
  *
  */
 public class Matrice {
+    public final int n;
     /**
      * Contiens les coefficients de chaque mot (id) dans la matrice.
      * Ils sont égaux à 1/(Nb ID dans la page).
      */
-    private final List<Float> C;
+    public final List<Float> C;
     /**
      * Liste des indices de début de chaque ligne de la matrice.
      * L[i] représente le début de la ligne i. Cette ligne se fini à L[i+1]-1.
      */
-    private final List<Integer> L;
+    public final List<Integer> L;
     /**
-     * Indice de la colonne associée au coefficient C.
+     * Indice de la colonne associée au coefficient C. 
+     * 
      */
-    private final List<Integer> I;
+    public final List<Integer> I;
 
-    public Matrice(){
+    public Matrice(int n ){
         this.C = new ArrayList<>();
         this.L = new ArrayList<>();
         this.I = new ArrayList<>();
+        this.n=n;
     }
 
     /**
@@ -51,20 +54,50 @@ public class Matrice {
      */
     public void insertPage(List<Integer> pageIdList){
         //Trier la liste
-        Collections.sort(pageIdList);
-        //C = 1/size.
+        // Collections.sort(pageIdList);
+
+        //C = 1/size. //plus maintenant 
+        //C = 1/ (size-nb de 0)
+        // for(int i = 0; i < pageIdList.size(); i++){
+        //     this.C.add(1f/pageIdList.size());
+        // }
+
+        //PLUS rempli I indice des id non nul 
+        int cmp=0;//compteur de 0 
         for(int i = 0; i < pageIdList.size(); i++){
-            this.C.add(1f/pageIdList.size());
+            if(pageIdList.get(i)==0){
+                cmp++;
+            }else{
+                this.I.add(i);
+            }
+        }
+        if(cmp!=n){
+            for(int i=0; i< pageIdList.size()-cmp; i++){
+                this.C.add(1f/(pageIdList.size()-cmp));
+            }
         }
         //L = Indice de début de la page.
 
         int indiceDebutPage = 0;
         if(this.L.size() != 0){
-            indiceDebutPage =  pageIdList.size() + this.L.get(this.L.size()-1);
+            indiceDebutPage =  pageIdList.size()-cmp + this.L.get(this.L.size()-1);
+            this.L.add(indiceDebutPage);
+        }else{
+            this.L.add(indiceDebutPage);
+            indiceDebutPage =  pageIdList.size()-cmp + this.L.get(this.L.size()-1);
+            this.L.add(indiceDebutPage);
+
         }
-        this.L.add(indiceDebutPage);
+
+        //FAUX
         //I = Liste des id d'article trié.
-        this.I.addAll(pageIdList);
+        // this.I.addAll(pageIdList);
+
+
+
+        
+
+
     }
 
     /**
@@ -90,9 +123,21 @@ public class Matrice {
         final int n = this.L.size()-2; // -2, car L est de taille n + 1.
         int somme = 0;
         for(int i = 0; i < n; i++){
-            for(int j = this.L.get(i);j < this.L.get(i+1); j++){
-                float valCourante = v.getValueAt(this.I.get(j));
-                float valActualisee = valCourante + this.C.get(j) * u.getValueAt(i);
+            // System.out.println("this.L.get(i)"+this.L.get(i));
+            // System.out.println("this.L.get(i+1)"+(this.L.get(i+1)-1));
+            // System.out.println("size I"+ this.I.size());
+
+            for(int j = this.L.get(i);j < this.L.get(i+1)-1; j++){
+                // System.out.println(j);
+                // System.out.println(this.I.get(j));
+                // // System.out.println(u.getNorme());
+                float valCourante = v.getValueAt(i);
+                // System.out.println("valc"+valCourante);
+                // System.out.println("this.C.get(j)"+this.C.get(j));
+                // System.out.println("this.I.get(j)"+this.I.get(j));
+                // System.out.println("u.getValueAt(this.I.get(j)"+u.getValueAt(this.I.get(j)));
+                float valActualisee = valCourante + this.C.get(j) * u.getValueAt(this.I.get(j));
+                // System.out.println("valac"+valActualisee);
                 v.insertValueAt(this.I.get(j), valActualisee);
 
                 //Passage de A0 à A.

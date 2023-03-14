@@ -1,6 +1,9 @@
 //fortement inspirer de https://www.baeldung.com/java-sax-parser
 import org.w3c.dom.events.MouseEvent;
 import org.xml.sax.SAXException;
+
+import maths.Matrice;
+import maths.Vecteur;
 import parser.WikiHandler;
 import parser.Wiki.WikiPage;
 
@@ -129,7 +132,7 @@ public class SaxParserMain {
         //wiki
         // File filewiki = new File("mywiki.xml");
 
-        SAXParserFactory factory = SAXParserFactory.newInstance();
+       /*  SAXParserFactory factory = SAXParserFactory.newInstance();
         System.setProperty("jdk.xml.totalEntitySizeLimit", String.valueOf(Integer.MAX_VALUE));
         SAXParser saxParser = factory.newSAXParser();
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
@@ -183,6 +186,42 @@ public class SaxParserMain {
         Map<String,Map<String, Double>> tfnorm = coeff_TF_normalise(normeVect, tf);
         // Map<String,Map<String, Double>> list_page_mot_tf= supp_page_tf_faible(tf, tfnorm, Dictionnaire);
         // System.out.println(list_page_mot_tf.size());
+
+*/
+        //Matrices
+
+        Matrice matrice;
+        matrice = new Matrice(4);
+        // List<Integer> page0 = Arrays.asList(35, 8, 50, 12);
+        List<Integer> page0 = Arrays.asList( 0,3, 5, 8);
+        matrice.insertPage(page0);
+
+        List<Integer> page1 = Arrays.asList(1,0,2,0);
+        matrice.insertPage(page1);
+
+
+        List<Integer> page2 = Arrays.asList(0,0,0,0);
+        matrice.insertPage(page2);
+
+        List<Integer> page3 = Arrays.asList(0,3,0,0);
+        matrice.insertPage(page3);
+
+
+        Vecteur u = new Vecteur();
+            u.insertValue(1);
+            u.insertValue(1);
+            u.insertValue(1);
+            u.insertValue(1);
+    
+        Vecteur outVecteur = matrice.multiplyByVector(u);
+        System.out.println(matrice.C); // ca sort dou ca
+        System.out.println(matrice.L); //L ok 
+        System.out.println(matrice.I); //cest C !
+
+
+        System.out.println("u "+u.vecteur);
+        System.out.println("out "+outVecteur.vecteur);
+        System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
     }
 
 }

@@ -11,7 +11,7 @@ public class Vecteur {
     /**
      * Liste contenant les valeurs du vecteur.
      */
-    private final List<Float> vecteur;
+    public List<Float> vecteur;
 
     public Vecteur(){
         this.vecteur = new ArrayList<>();
@@ -22,8 +22,10 @@ public class Vecteur {
      * @param norme la norme de ce vecteur.
      */
     public Vecteur(int norme){
-        this.vecteur = new ArrayList<>(norme);
-        Collections.fill(this.vecteur, 0f);
+        this.vecteur = new ArrayList<>();
+        for(int i=0; i<norme; i++){
+            this.vecteur.add(0f);
+        }
     }
 
     /**
