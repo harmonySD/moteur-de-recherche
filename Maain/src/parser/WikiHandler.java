@@ -23,6 +23,13 @@ public class WikiHandler extends DefaultHandler{
     private PrintWriter pw;
     private boolean again=false;
 
+    private List<Set<Integer>> pagesLinks;
+
+    public WikiHandler(List<Set<Integer>> pagesLinks){
+        super();
+        this.pagesLinks = pagesLinks;
+    }
+
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (elementValue == null) {
@@ -182,7 +189,7 @@ public class WikiHandler extends DefaultHandler{
         return website;
     }
 
-    private static void rempParam(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
+    private void rempParam(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Iterator<Wiki.WikiPage> it = list.iterator();
         list.get(list.size()-1);
         while (it.hasNext()) {
@@ -193,12 +200,14 @@ public class WikiHandler extends DefaultHandler{
         }
     }
 
-    private static void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
+    private void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Pattern p;
         Matcher m;
         p = Pattern.compile("aér*|avion");
         Iterator<Wiki.WikiPage> it = list.iterator();
         list.get(list.size()-1);
+        Set<Integer> pageLinks = new HashSet<>(); // List of all the links to other pages.
+
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
             m = p.matcher(n.getText().toLowerCase());
@@ -245,9 +254,13 @@ public class WikiHandler extends DefaultHandler{
                 StringBuilder sb = new StringBuilder();
                 while (matcher.find()) {
                     String title = matcher.group(0).substring(2, matcher.group(0).length()-2);
-                    if(!mapIdToTitle.containsKey(title)) {
+                    Integer articleId = mapIdToTitle.get(title);
+                    if(articleId == null) {
                         nbId++;
                         mapIdToTitle.put(title, nbId);
+                        pageLinks.add(nbId);
+                    }else{
+                        pageLinks.add(articleId);
                     }
                     matcher.appendReplacement(sb, "[[" + mapIdToTitle.get(title) + "]]");
                 }
@@ -263,6 +276,8 @@ public class WikiHandler extends DefaultHandler{
                     pw.println("<title>" + t + "</title>\n"  + "<text>" + sb.toString().toLowerCase() + "</text>");
                     }
                 }
+                // Adds the page link to the global list in order to populate the CLI later.
+                this.pagesLinks.add(pageLinks);
             }
         }
     }

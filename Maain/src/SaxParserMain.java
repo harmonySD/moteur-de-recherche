@@ -1,5 +1,4 @@
 //fortement inspirer de https://www.baeldung.com/java-sax-parser
-import org.w3c.dom.events.MouseEvent;
 import org.xml.sax.SAXException;
 
 import maths.Matrice;
@@ -7,17 +6,12 @@ import maths.Vecteur;
 import parser.WikiHandler;
 import parser.Wiki.WikiPage;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.Paths;
-import java.security.KeyStore.Entry;
 import java.util.*;
 
-import javax.swing.plaf.synth.SynthEditorPaneUI;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -27,6 +21,8 @@ import java.io.IOException;
 
 
 public class SaxParserMain {
+
+    private static Matrice CLI;
 
     static double idf(Map<String,Integer> dictionaire, String m){
         double frac=WikiHandler.nbwikipage/dictionaire.get(m);
@@ -144,13 +140,14 @@ public class SaxParserMain {
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
         //wiki
         // File filewiki = new File("mywiki.xml");
-
-       /*  SAXParserFactory factory = SAXParserFactory.newInstance();
+         SAXParserFactory factory = SAXParserFactory.newInstance();
         System.setProperty("jdk.xml.totalEntitySizeLimit", String.valueOf(Integer.MAX_VALUE));
         SAXParser saxParser = factory.newSAXParser();
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
 
-        WikiHandler wikiHandler = new WikiHandler();
+        List<Set<Integer>> pagesLinks = new ArrayList<>(); // List containing all of the pages links to other article (ie :pages).
+
+        WikiHandler wikiHandler = new WikiHandler(pagesLinks);
         if(args.length > 0){
             saxParser.parse(Paths.get(args[0]).toAbsolutePath().toString(), wikiHandler);
         }else {
@@ -159,6 +156,11 @@ public class SaxParserMain {
             // }else{
             //     saxParser.parse(args[0], wikiHandler);
             }
+        }
+
+        CLI = new Matrice(wikiHandler.getWebsite().getAllPageList().size());
+        for(Set<Integer> links : pagesLinks){
+            CLI.insertPage(links.stream().toList());
         }
 
         //Dictionnaire
@@ -235,7 +237,6 @@ public class SaxParserMain {
         System.out.println("u "+u.vecteur);
         System.out.println("out "+outVecteur.vecteur);
         System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
-        */
 
         // REQUETES
 
