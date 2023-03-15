@@ -113,6 +113,24 @@ public class WikiHandler extends DefaultHandler{
         catch (IOException e) {
             e.printStackTrace();
         }
+
+         // Serialization of the listset for next steps.
+         try {
+            FileOutputStream fileOutputStream
+                    = new FileOutputStream(
+                    "pagesLink.txt");
+
+            ObjectOutputStream objectOutputStream
+                    = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeObject(pagesLinks);
+
+            objectOutputStream.close();
+            fileOutputStream.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

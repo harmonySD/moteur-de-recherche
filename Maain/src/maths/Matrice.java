@@ -131,7 +131,7 @@ public class Matrice {
 
                 //Passage de A0 à A.
                 if(Objects.equals(this.L.get(i), this.L.get(i + 1))){
-                    somme += (1/n)*u.getValueAt(i);
+                    somme += (1f/n)*u.getValueAt(i);
                 }
 
                 //Passage de A à Ag.

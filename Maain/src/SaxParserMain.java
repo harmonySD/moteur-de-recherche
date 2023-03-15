@@ -24,6 +24,39 @@ public class SaxParserMain {
 
     private static Matrice CLI;
 
+    
+    static Map<String, Double> relation_mot_page(Map<String,Integer> dictionnaire, WikiPage wikipage){
+        Map<String, Double> mot_apparition = new HashMap<>();
+        String [] a=wikipage.getText().split(" ");
+        for(int j=0; j<a.length; j++){
+            if(dictionnaire.get(a[j])!= null){
+                if (mot_apparition.containsKey(a[j])) {
+                    double value = mot_apparition.get(a[j]);
+                    value++;
+                    mot_apparition.replace(a[j], value);
+                } else {
+                    mot_apparition.put(a[j], (double) 1);
+                }           
+            }
+        }
+        return mot_apparition;
+    }
+
+    // static void parcours_wiki_to_cli(WikiHandler wiki, Map<String,Integer> dictionnaire){
+    //     Matrice matrice;
+    //     matrice = new Matrice(wiki.getWebsite().getAllPageList().size());
+    //     for(int i=0; i<wiki.getWebsite().getAllPageList().size(); i++ ){
+    //         WikiPage page= wiki.getWebsite().getAllPageList().get(i);
+    //         Map<String, Double> relation_mp= relation_mot_page(dictionnaire, page);
+    //         relation_mp.
+    //         List<Integer> page0 = Arrays.asList( 0,3, 5, 8);
+    //         matrice.insertPage(page0);
+
+    //     }
+
+    // }
+
+
     static double idf(Map<String,Integer> dictionaire, String m){
         double frac=WikiHandler.nbwikipage/dictionaire.get(m);
         return java.lang.Math.log10(frac);
@@ -38,20 +71,7 @@ public class SaxParserMain {
           
           for(int i=0; i<wiki.getWebsite().getAllPageList().size(); i++ ){
             WikiPage page= wiki.getWebsite().getAllPageList().get(i);
-            Map<String, Double> mot_apparition = new HashMap<>();
-            String [] a=page.getText().split(" ");
-                for(int j=0; j<a.length; j++){
-                    if(dictionnaire.get(a[j])!= null){
-                        if (mot_apparition.containsKey(a[j])) {
-                            double value = mot_apparition.get(a[j]);
-                            value++;
-                            mot_apparition.replace(a[j], value);
-                        } else {
-                            mot_apparition.put(a[j], (double) 1);
-                        }
-                    }
-                    
-                }
+            Map<String, Double> mot_apparition = relation_mot_page(dictionnaire, page);
                 //la jai dans mot_apparition pour chaque mot qui est contenu dans le dico la frequence d'apparition dasn la page
                 for (Map.Entry<String,Integer> entry : dictionnaire.entrySet()) {
                     if(mot_apparition.get(entry.getKey())!=null){
@@ -61,7 +81,7 @@ public class SaxParserMain {
 
                     }
                 }
-          }
+        }
         return tf;
     }
 
@@ -97,7 +117,7 @@ public class SaxParserMain {
 
     static Map<String,Map<String, Double>> supp_page_tf_faible(Map<String,Map<String, Double>> tf, Map<String,Map<String, Double>> coeff_tf_norm, Map<String,Integer> dictionaire){
         // enlever de la list des pages associe au mot 
-        Map<String,Map<String, Double>> liste_page_mot=tf;
+        // Map<String,Map<String, Double>> liste_page_mot=tf;
         Map<String,Map<String, Double>> m = new HashMap<>();
         m.putAll(tf);
         for (Map.Entry<String, Map<String,Double>> entry : tf.entrySet()) {
@@ -138,7 +158,7 @@ public class SaxParserMain {
 
     
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-        //wiki
+         //wiki
         // File filewiki = new File("mywiki.xml");
          SAXParserFactory factory = SAXParserFactory.newInstance();
         System.setProperty("jdk.xml.totalEntitySizeLimit", String.valueOf(Integer.MAX_VALUE));
@@ -160,6 +180,7 @@ public class SaxParserMain {
 
         CLI = new Matrice(wikiHandler.getWebsite().getAllPageList().size());
         for(Set<Integer> links : pagesLinks){
+            // System.out.println("toto");
             CLI.insertPage(links.stream().toList());
         }
 
@@ -196,15 +217,17 @@ public class SaxParserMain {
         //map avec pour chaque mot 
         // TF
         //renvoyer map <mot,<title, tf>>
-        Map<String,Map<String, Double>> tf = term_freq(Dictionnaire, wikiHandler);
-        Map<String,Double> normeVect = norme_vecteur(tf);
-        Map<String,Map<String, Double>> tfnorm = coeff_TF_normalise(normeVect, tf);
+
+        // Map<String,Map<String, Double>> tf = term_freq(Dictionnaire, wikiHandler);
+        // Map<String,Double> normeVect = norme_vecteur(tf);
+        // Map<String,Map<String, Double>> tfnorm = coeff_TF_normalise(normeVect, tf);
+
         // Map<String,Map<String, Double>> list_page_mot_tf= supp_page_tf_faible(tf, tfnorm, Dictionnaire);
         // System.out.println(list_page_mot_tf.size());
 
 
         //Matrices
-
+        
         Matrice matrice;
         matrice = new Matrice(4);
         // List<Integer> page0 = Arrays.asList(35, 8, 50, 12);
@@ -237,6 +260,24 @@ public class SaxParserMain {
         System.out.println("u "+u.vecteur);
         System.out.println("out "+outVecteur.vecteur);
         System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
+        
+        //PAGE RANK 🥵
+
+        //rempli pi0
+        Vecteur piZero = new Vecteur();
+        int  n=wikiHandler.getWebsite().getAllPageList().size();
+        float f=1f/n;
+        for(int i=0; i<n; i++){
+            piZero.insertValue(f);
+        }
+
+        //calcul pagerank (produit matrice vecteur)
+        // Vecteur pagerank=CLI.multiplyByVector(piZero);
+
+        System.out.println(CLI.C);
+        System.out.println(CLI.L);
+        System.out.println(CLI.I);
+        // System.out.println(pagerank.vecteur);
 
         // REQUETES
 
