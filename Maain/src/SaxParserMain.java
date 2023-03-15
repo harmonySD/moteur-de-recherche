@@ -123,6 +123,19 @@ public class SaxParserMain {
         return m; 
     }
 
+    static HashSet<String> requete(String rq){
+        HashSet<String> rqcorrect=new HashSet<>();
+        HashSet<String> ignore=Dictionnary.IgnoredWords;
+        String[] toExploreStr = rq.toLowerCase(Locale.ROOT).split(" ");
+            for (String toCheck : toExploreStr) {
+                if (!ignore.contains(toCheck) && !toCheck.equals("") && !toCheck.equals(" ")
+                        && !toCheck.contains("[") && !toCheck.contains("]")) {
+                            rqcorrect.add(toCheck);
+                }
+            }
+        return rqcorrect;
+    }
+
 
 
 
@@ -187,7 +200,7 @@ public class SaxParserMain {
         // Map<String,Map<String, Double>> list_page_mot_tf= supp_page_tf_faible(tf, tfnorm, Dictionnaire);
         // System.out.println(list_page_mot_tf.size());
 
-*/
+
         //Matrices
 
         Matrice matrice;
@@ -222,6 +235,12 @@ public class SaxParserMain {
         System.out.println("u "+u.vecteur);
         System.out.println("out "+outVecteur.vecteur);
         System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
+        */
+
+        // REQUETES
+
+        HashSet<String> r=requete("toto est la bien au chaud");
+        System.out.println(r);
     }
 
 }
