@@ -54,44 +54,44 @@ public class Matrice {
      */
     public void insertPage(List<Integer> pageIdList){
         //Trier la liste
-        // Collections.sort(pageIdList);
+        Collections.sort(pageIdList);
 
-        //C = 1/size. //plus maintenant 
-        //C = 1/ (size-nb de 0)
-        // for(int i = 0; i < pageIdList.size(); i++){
-        //     this.C.add(1f/pageIdList.size());
-        // }
+        // C = 1/size. //plus maintenant 
+        // C = 1/ (size-nb de 0)
+        for(int i = 0; i < pageIdList.size(); i++){
+            this.C.add(1f/pageIdList.size());
+        }
 
         //PLUS rempli I indice des id non nul 
-        int cmp=0;//compteur de 0 
-        for(int i = 0; i < pageIdList.size(); i++){
-            if(pageIdList.get(i)==0){
-                cmp++;
-            }else{
-                this.I.add(i);
-            }
-        }
-        if(cmp!=n){
-            for(int i=0; i< pageIdList.size()-cmp; i++){
-                this.C.add(1f/(pageIdList.size()-cmp));
-            }
-        }
+        // int cmp=0;//compteur de 0 
+        // for(int i = 0; i < pageIdList.size(); i++){
+        //     if(pageIdList.get(i)==0){
+        //         cmp++;
+        //     }else{
+        //         this.I.add(i);
+        //     }
+        // }
+        // if(cmp!=n){
+        //     for(int i=0; i< pageIdList.size()-cmp; i++){
+        //         this.C.add(1f/(pageIdList.size()-cmp));
+        //     }
+        // }
         //L = Indice de début de la page.
 
         int indiceDebutPage = 0;
         if(this.L.size() != 0){
-            indiceDebutPage =  pageIdList.size()-cmp + this.L.get(this.L.size()-1);
+            indiceDebutPage =  pageIdList.size() + this.L.get(this.L.size()-1);
             this.L.add(indiceDebutPage);
         }else{
             this.L.add(indiceDebutPage);
-            indiceDebutPage =  pageIdList.size()-cmp + this.L.get(this.L.size()-1);
+            indiceDebutPage =  pageIdList.size() + this.L.get(this.L.size()-1);
             this.L.add(indiceDebutPage);
 
         }
 
         //FAUX
         //I = Liste des id d'article trié.
-        // this.I.addAll(pageIdList);
+        this.I.addAll(pageIdList);
 
 
 
@@ -136,6 +136,7 @@ public class Matrice {
 
                 //Passage de A à Ag.
                 for(int k = 0; k < n; k++){
+                    System.out.println(k);
                     float val = v.getValueAt(k) + somme;
                     float valEpsilon = (1 - Constantes.epsilon)*val+(Constantes.epsilon/n);
                     v.insertValueAt(k, valEpsilon);

@@ -8,6 +8,7 @@ import parser.Wiki.WikiPage;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.util.*;
@@ -18,6 +19,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 
 public class SaxParserMain {
@@ -157,7 +159,7 @@ public class SaxParserMain {
 
 
     
-    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException {
          //wiki
         // File filewiki = new File("mywiki.xml");
          SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -166,7 +168,27 @@ public class SaxParserMain {
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
 
         List<Set<Integer>> pagesLinks = new ArrayList<>(); // List containing all of the pages links to other article (ie :pages).
-
+        File f= new File("pagesLink.txt");
+        if(f.exists()){
+            try {
+                FileInputStream fileInputStream
+                        = new FileInputStream(
+                        "pagesLink.txt");
+        
+                    ObjectInputStream objectInputStream
+                            = new ObjectInputStream(fileInputStream);
+        
+                    pagesLinks=(List<Set<Integer>>) objectInputStream.readObject();
+                    System.out.println("TOTO"+pagesLinks.size());
+        
+                    objectInputStream.close();
+                    fileInputStream.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            
+    }
         WikiHandler wikiHandler = new WikiHandler(pagesLinks);
         if(args.length > 0){
             saxParser.parse(Paths.get(args[0]).toAbsolutePath().toString(), wikiHandler);
@@ -177,12 +199,14 @@ public class SaxParserMain {
             //     saxParser.parse(args[0], wikiHandler);
             }
         }
-
+        
         CLI = new Matrice(wikiHandler.getWebsite().getAllPageList().size());
         for(Set<Integer> links : pagesLinks){
             // System.out.println("toto");
-            CLI.insertPage(links.stream().toList());
+            List<Integer> tmp= new ArrayList<>(links);
+            CLI.insertPage(tmp);
         }
+
 
         //Dictionnaire
         File file = new File("Dictionnaire.txt");
@@ -231,17 +255,17 @@ public class SaxParserMain {
         Matrice matrice;
         matrice = new Matrice(4);
         // List<Integer> page0 = Arrays.asList(35, 8, 50, 12);
-        List<Integer> page0 = Arrays.asList( 0,3, 5, 8);
+        List<Integer> page0 = Arrays.asList( 1, 3, 2);
         matrice.insertPage(page0);
 
-        List<Integer> page1 = Arrays.asList(1,0,2,0);
+        List<Integer> page1 = Arrays.asList(1,2);
         matrice.insertPage(page1);
 
 
-        List<Integer> page2 = Arrays.asList(0,0,0,0);
+        List<Integer> page2 = Arrays.asList();
         matrice.insertPage(page2);
 
-        List<Integer> page3 = Arrays.asList(0,3,0,0);
+        List<Integer> page3 = Arrays.asList(3);
         matrice.insertPage(page3);
 
 
@@ -252,27 +276,32 @@ public class SaxParserMain {
             u.insertValue(1);
     
         Vecteur outVecteur = matrice.multiplyByVector(u);
-        System.out.println(matrice.C); // ca sort dou ca
-        System.out.println(matrice.L); //L ok 
-        System.out.println(matrice.I); //cest C !
+        // System.out.println(matrice.C); // ca sort dou ca
+        // System.out.println(matrice.L); //L ok 
+        // System.out.println(matrice.I); //cest C !
 
 
-        System.out.println("u "+u.vecteur);
-        System.out.println("out "+outVecteur.vecteur);
-        System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
+        // System.out.println("u "+u.vecteur);
+        // System.out.println("out "+outVecteur.vecteur);
+        // System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
         
         //PAGE RANK 🥵
 
         //rempli pi0
         Vecteur piZero = new Vecteur();
         int  n=wikiHandler.getWebsite().getAllPageList().size();
-        float f=1f/n;
+        float unsurn=1f/n;
         for(int i=0; i<n; i++){
-            piZero.insertValue(f);
+            piZero.insertValue(unsurn);
         }
 
+        System.out.println("norme piO"+piZero.getNorme());
         //calcul pagerank (produit matrice vecteur)
-        // Vecteur pagerank=CLI.multiplyByVector(piZero);
+        Vecteur pagerank=piZero;
+        for(int i = 0; i<2; i++){
+            pagerank=CLI.multiplyByVector(pagerank);
+        }
+        // System.out.println(pagerank);
 
         System.out.println(CLI.C);
         System.out.println(CLI.L);

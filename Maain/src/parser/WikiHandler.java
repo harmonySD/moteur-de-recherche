@@ -124,6 +124,7 @@ public class WikiHandler extends DefaultHandler{
                     = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(pagesLinks);
+            System.out.println(pagesLinks.size());
 
             objectOutputStream.close();
             fileOutputStream.close();
@@ -224,12 +225,13 @@ public class WikiHandler extends DefaultHandler{
         p = Pattern.compile("aér*|avion");
         Iterator<Wiki.WikiPage> it = list.iterator();
         list.get(list.size()-1);
-        Set<Integer> pageLinks = new HashSet<>(); // List of all the links to other pages.
+        
 
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
             m = p.matcher(n.getText().toLowerCase());
             if(m.find()){
+                Set<Integer> pageLinks = new HashSet<>(); // List of all the links to other pages.
                 nbId++;
                 // Set the ID mapped to the article title if it does not already exist.
                 mapIdToTitle.computeIfAbsent(n.getTitle(), k -> nbId);
