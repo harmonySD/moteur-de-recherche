@@ -269,13 +269,13 @@ public class SaxParserMain {
         matrice.insertPage(page3);
 
 
-        Vecteur u = new Vecteur();
-            u.insertValue(1);
-            u.insertValue(1);
-            u.insertValue(1);
-            u.insertValue(1);
+        // Vecteur u = new Vecteur();
+        //     u.insertValue(1);
+        //     u.insertValue(1);
+        //     u.insertValue(1);
+        //     u.insertValue(1);
     
-        Vecteur outVecteur = matrice.multiplyByVector(u);
+        // Vecteur outVecteur = matrice.multiplyByVector(u);
         // System.out.println(matrice.C); // ca sort dou ca
         // System.out.println(matrice.L); //L ok 
         // System.out.println(matrice.I); //cest C !

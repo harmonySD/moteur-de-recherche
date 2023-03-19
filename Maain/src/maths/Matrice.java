@@ -54,29 +54,29 @@ public class Matrice {
      */
     public void insertPage(List<Integer> pageIdList){
         //Trier la liste
-        Collections.sort(pageIdList);
+        // Collections.sort(pageIdList);
 
         // C = 1/size. //plus maintenant 
         // C = 1/ (size-nb de 0)
-        for(int i = 0; i < pageIdList.size(); i++){
-            this.C.add(1f/pageIdList.size());
-        }
-
-        //PLUS rempli I indice des id non nul 
-        // int cmp=0;//compteur de 0 
         // for(int i = 0; i < pageIdList.size(); i++){
-        //     if(pageIdList.get(i)==0){
-        //         cmp++;
-        //     }else{
-        //         this.I.add(i);
-        //     }
+        //     this.C.add(1f/pageIdList.size());
         // }
-        // if(cmp!=n){
-        //     for(int i=0; i< pageIdList.size()-cmp; i++){
-        //         this.C.add(1f/(pageIdList.size()-cmp));
-        //     }
-        // }
-        //L = Indice de début de la page.
+
+        // PLUS rempli I indice des id non nul 
+        int cmp=0;//compteur de 0 
+        for(int i = 0; i < pageIdList.size(); i++){
+            if(pageIdList.get(i)==0){
+                cmp++;
+            }else{
+                this.I.add(i);
+            }
+        }
+        if(cmp!=n){
+            for(int i=0; i< pageIdList.size()-cmp; i++){
+                this.C.add(1f/(pageIdList.size()-cmp));
+            }
+        }
+        // L = Indice de début de la page.
 
         int indiceDebutPage = 0;
         if(this.L.size() != 0){
@@ -91,7 +91,7 @@ public class Matrice {
 
         //FAUX
         //I = Liste des id d'article trié.
-        this.I.addAll(pageIdList);
+        // this.I.addAll(pageIdList);
 
 
 
@@ -119,15 +119,30 @@ public class Matrice {
      * @return le vecteur résultant de la multiplication.
      */
     public Vecteur multiplyByVector(Vecteur u){
+        System.out.println("u norme"+u.getNorme());
+        // u.getValueAt(0);
+        // System.out.println("ok");
+        // u.getValueAt(173718);
+        // System.out.println("ok");
+        // u.getValueAt(173719);
+        System.out.println("norme c"+this.C.size());
+        System.out.println("norme i"+this.I.size());
         Vecteur v = new Vecteur(u.getNorme());
         final int n = this.L.size()-1; // -2, car L est de taille n + 1.
+        System.out.println("n"+n);
         int somme = 0;
         for(int i = 0; i < n; i++){
             for(int j = this.L.get(i);j <= this.L.get(i+1)-1; j++){
                 float valCourante = v.getValueAt(i); 
+                // System.out.println("test "+(this.L.get(i+1)-1));
+                // System.out.println("c"+this.C.get(j));
+                // System.out.println("i"+this.I.get(j+1));
+                // System.out.println("i"+this.I.get(j+2));
+                // System.out.println("u"+u.getValueAt(this.I.get(j)));
                 float valActualisee = valCourante + this.C.get(j) * u.getValueAt(this.I.get(j));
-    
+                // float valActualisee = valCourante + this.C.get(j) * u.getValueAt(i);
                 v.insertValueAt(i, valActualisee);
+                // v.insertValueAt(this.I.get(j), valActualisee);
 
                 //Passage de A0 à A.
                 if(Objects.equals(this.L.get(i), this.L.get(i + 1))){
@@ -135,10 +150,15 @@ public class Matrice {
                 }
 
                 //Passage de A à Ag.
+                // System.out.println("normee"+v.getNorme());
+                // System.out.println(n);
                 for(int k = 0; k < n; k++){
-                    System.out.println(k);
+                    // System.out.println ("k"+k);
+
+                    // System.out.println(v.getNorme());
                     float val = v.getValueAt(k) + somme;
-                    float valEpsilon = (1 - Constantes.epsilon)*val+(Constantes.epsilon/n);
+                    // System.out.println("v"+val);
+                    float valEpsilon = (1f - Constantes.epsilon)*val+(Constantes.epsilon/n);
                     v.insertValueAt(k, valEpsilon);
                 }
             }

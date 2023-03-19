@@ -293,11 +293,11 @@ public class WikiHandler extends DefaultHandler{
                     website.getAllPageList().add(new Wiki.WikiPage());
                     latestAllPage().setTitle(t);
                     latestAllPage().setText(sb.toString().toLowerCase());
+                    // Adds the page link to the global list in order to populate the CLI later.
+                    this.pagesLinks.add(pageLinks);
                     pw.println("<title>" + t + "</title>\n"  + "<text>" + sb.toString().toLowerCase() + "</text>");
                     }
                 }
-                // Adds the page link to the global list in order to populate the CLI later.
-                this.pagesLinks.add(pageLinks);
             }
         }
     }
