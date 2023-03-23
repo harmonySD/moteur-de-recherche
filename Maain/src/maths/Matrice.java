@@ -54,16 +54,16 @@ public class Matrice {
      */
     public void insertPage(List<Integer> pageIdList){
         //Trier la liste
-        // Collections.sort(pageIdList);
+        Collections.sort(pageIdList);
 
         // C = 1/size. //plus maintenant 
         // C = 1/ (size-nb de 0)
-        // for(int i = 0; i < pageIdList.size(); i++){
-        //     this.C.add(1f/pageIdList.size());
-        // }
+         for(int i = 0; i < pageIdList.size(); i++){
+             this.C.add(1f/pageIdList.size());
+         }
 
         // PLUS rempli I indice des id non nul 
-        int cmp=0;//compteur de 0 
+        /*int cmp=0;//compteur de 0
         for(int i = 0; i < pageIdList.size(); i++){
             if(pageIdList.get(i)==0){
                 cmp++;
@@ -75,7 +75,7 @@ public class Matrice {
             for(int i=0; i< pageIdList.size()-cmp; i++){
                 this.C.add(1f/(pageIdList.size()-cmp));
             }
-        }
+        }*/
         // L = Indice de début de la page.
 
         int indiceDebutPage = 0;
@@ -89,15 +89,8 @@ public class Matrice {
 
         }
 
-        //FAUX
         //I = Liste des id d'article trié.
-        // this.I.addAll(pageIdList);
-
-
-
-        
-
-
+        this.I.addAll(pageIdList);
     }
 
     /**

@@ -162,7 +162,7 @@ public class SaxParserMain {
         SAXParser saxParser = factory.newSAXParser();
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
 
-        List<Set<Integer>> pagesLinks = new ArrayList<>(); // List containing all the pages links to other article (ie :pages).
+        List<List<Integer>> pagesLinks = new ArrayList<>(); // List containing all the pages links to other article (ie :pages).
         File f= new File("pagesLink.txt");
         if(f.exists()){
             try {
@@ -173,7 +173,7 @@ public class SaxParserMain {
                 ObjectInputStream objectInputStream
                         = new ObjectInputStream(fileInputStream);
 
-                pagesLinks=(List<Set<Integer>>) objectInputStream.readObject();
+                pagesLinks=(List<List<Integer>>) objectInputStream.readObject();
                 System.out.println("TOTO "+pagesLinks.size());
 
                 objectInputStream.close();
@@ -249,7 +249,7 @@ public class SaxParserMain {
             throw new RuntimeException(" PAGESLINKS VIDE !!!!! IMPOSSIBLE DE CONTINUER ");
         }
         CLI = new Matrice(wikiHandler.getWebsite().getAllPageList().size());
-        for(Set<Integer> links : pagesLinks){
+        for(List<Integer> links : pagesLinks){
             // System.out.println("toto");
             List<Integer> tmp= new ArrayList<>(links);
             CLI.insertPage(tmp);

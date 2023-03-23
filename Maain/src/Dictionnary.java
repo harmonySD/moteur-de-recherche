@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 
 public class Dictionnary extends DefaultHandler {
-    private final List<Set<Integer>> pagesLinks;
+    private final List<List<Integer>> pagesLinks;
     private final Map<String, Integer> readOnlyMapIdToTitle;
 
     //Properties props = new Properties();
@@ -21,7 +21,7 @@ public class Dictionnary extends DefaultHandler {
             , "du", "sous", "sur", "dans", "ton", "tu", "je", "il", "nous", "vous", "ils", "elles", "elle", "on", "tous"
             , "tout", "et", "ou", "où", "aux","au","du","que","quel","quelle"));
 
-    public Dictionnary(List<Set<Integer>> pagesLinks, Map<String, Integer> ReadOnlyMapIdToTitle) {
+    public Dictionnary(List<List<Integer>> pagesLinks, Map<String, Integer> ReadOnlyMapIdToTitle) {
         this.pagesLinks = pagesLinks;
         this.readOnlyMapIdToTitle = ReadOnlyMapIdToTitle;
     }
@@ -31,7 +31,7 @@ public class Dictionnary extends DefaultHandler {
         BufferedReader objReader = new BufferedReader(new FileReader("./mywiki.xml"));
         Map<String,Integer> tmpHashMap = new HashMap<>();
         String strCurrentLine;
-        Set<Integer> pageLinks = new HashSet<>(); // List of all the links to other pages.
+        List<Integer> pageLinks = new ArrayList<>(); // List of all the links to other pages.
 
         while ((strCurrentLine = objReader.readLine()) != null) {
             String correctedStr = strCurrentLine.replaceAll("<.*>.*</.*>","");
@@ -51,7 +51,7 @@ public class Dictionnary extends DefaultHandler {
             Matcher matcher = pattern.matcher(strCurrentLine);
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
-                String title = matcher.group(0).substring(2, matcher.group(0).length()-2);
+                String title = matcher.group(0).substring(2, matcher.group(0).length()-2).toLowerCase();
                 Integer articleId = readOnlyMapIdToTitle.get(title);
                 if(articleId != null) {
                     pageLinks.add(articleId);
@@ -63,7 +63,7 @@ public class Dictionnary extends DefaultHandler {
             if(strCurrentLine.contains("</page>")){
                 //System.out.println("DICO FIN DE PAGE");
                 pagesLinks.add(pageLinks);
-                pageLinks = new HashSet<>();
+                pageLinks = new ArrayList<>();
             }
 
             String[] toExploreStr = correctedStr.toLowerCase(Locale.ROOT).split(" ");

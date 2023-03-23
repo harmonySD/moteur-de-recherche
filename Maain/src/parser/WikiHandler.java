@@ -177,7 +177,8 @@ public class WikiHandler extends DefaultHandler{
     private void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Pattern p;
         Matcher m;
-        p = Pattern.compile("aér*|avion");
+        //p = Pattern.compile("aér*|avion");
+        p = Pattern.compile("algo*");
         Iterator<Wiki.WikiPage> it = list.iterator();
         list.get(list.size()-1);
 
@@ -221,8 +222,8 @@ public class WikiHandler extends DefaultHandler{
                     // System.out.println("page trop courte !");
                 }else{
                     // Set the ID mapped to the article title if it does not already exist.
-                    mapIdToTitle.computeIfAbsent(n.getTitle(), k -> nbwikipage);
-                    n.setId(mapIdToTitle.get(n.getTitle()));
+                    mapIdToTitle.computeIfAbsent(n.getTitle().toLowerCase(), k -> nbwikipage);
+                    n.setId(mapIdToTitle.get(n.getTitle().toLowerCase()));
 
                     website.getAllPageList().add(new Wiki.WikiPage());
                     latestAllPage().setTitle(t);
