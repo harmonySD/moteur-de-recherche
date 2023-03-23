@@ -3,9 +3,14 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Dictionnary extends DefaultHandler {
+    private final List<Set<Integer>> pagesLinks;
+    private final Map<String, Integer> readOnlyMapIdToTitle;
+
     //Properties props = new Properties();
     //props.load(IOUtils.readerFromString("StanfordCoreNLP-french.properties"));
     //StanfordCoreNLP corenlp = new StanfordCoreNLP(props);
@@ -16,11 +21,18 @@ public class Dictionnary extends DefaultHandler {
             , "du", "sous", "sur", "dans", "ton", "tu", "je", "il", "nous", "vous", "ils", "elles", "elle", "on", "tous"
             , "tout", "et", "ou", "où", "aux","au","du","que","quel","quelle"));
 
-    public static Map<String,Integer> makeDictionnary() throws IOException {
+    public Dictionnary(List<Set<Integer>> pagesLinks, Map<String, Integer> ReadOnlyMapIdToTitle) {
+        this.pagesLinks = pagesLinks;
+        this.readOnlyMapIdToTitle = ReadOnlyMapIdToTitle;
+    }
+
+    public Map<String,Integer> makeDictionnary() throws IOException {
         Map<String, Integer> alphabeticallySorted = new TreeMap<>();
         BufferedReader objReader = new BufferedReader(new FileReader("./mywiki.xml"));
         Map<String,Integer> tmpHashMap = new HashMap<>();
         String strCurrentLine;
+        Set<Integer> pageLinks = new HashSet<>(); // List of all the links to other pages.
+
         while ((strCurrentLine = objReader.readLine()) != null) {
             String correctedStr = strCurrentLine.replaceAll("<.*>.*</.*>","");
             correctedStr = correctedStr.replaceAll("<.*/>", "");
@@ -30,9 +42,30 @@ public class Dictionnary extends DefaultHandler {
             correctedStr = correctedStr.replaceAll("<gallery","");
             correctedStr = correctedStr.replaceAll("style.+","");
             correctedStr = correctedStr.replaceAll("jpg","");
-            correctedStr = correctedStr.replaceAll("&|#.*|\".*","");
+            correctedStr = correctedStr.replaceAll("&|#.*|\".*|@.*","");
             correctedStr = correctedStr.replaceAll("'.*","");
             correctedStr = correctedStr.replaceAll("’.*","");
+
+            // Search for [[Article]] and replaces it with [[id]].
+            Pattern pattern = Pattern.compile("\\[\\[[[A-Za-zÀ-ÖØ-öø-ÿ]+| ]*]]");
+            Matcher matcher = pattern.matcher(strCurrentLine);
+            StringBuilder sb = new StringBuilder();
+            while (matcher.find()) {
+                String title = matcher.group(0).substring(2, matcher.group(0).length()-2);
+                Integer articleId = readOnlyMapIdToTitle.get(title);
+                if(articleId != null) {
+                    pageLinks.add(articleId);
+                }
+                matcher.appendReplacement(sb, title);
+            }
+            matcher.appendTail(sb);
+
+            if(strCurrentLine.contains("</page>")){
+                //System.out.println("DICO FIN DE PAGE");
+                pagesLinks.add(pageLinks);
+                pageLinks = new HashSet<>();
+            }
+
             String[] toExploreStr = correctedStr.toLowerCase(Locale.ROOT).split(" ");
             for (String toCheck : toExploreStr) {
                 if (!IgnoredWords.contains(toCheck) && !toCheck.equals("") && !toCheck.equals(" ")
@@ -58,6 +91,25 @@ public class Dictionnary extends DefaultHandler {
             }
             alphabeticallySorted.put(entry.getKey(),entry.getValue());
             count++;
+        }
+
+        // Serialization of the listset for next steps.
+        try {
+            FileOutputStream fileOutputStream
+                    = new FileOutputStream(
+                    "pagesLink.txt");
+
+            ObjectOutputStream objectOutputStream
+                    = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeObject(pagesLinks);
+            System.out.println(pagesLinks.size());
+
+            objectOutputStream.close();
+            fileOutputStream.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
         return alphabeticallySorted;
     }
