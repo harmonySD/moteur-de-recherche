@@ -60,7 +60,7 @@ public class Dictionnary extends DefaultHandler {
             }
             matcher.appendTail(sb);
 
-            if(strCurrentLine.contains("</page>")){
+            if(strCurrentLine.contains("</text>")){
                 //System.out.println("DICO FIN DE PAGE");
                 pagesLinks.add(pageLinks);
                 pageLinks = new ArrayList<>();
