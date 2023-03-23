@@ -103,7 +103,7 @@ public class WikiHandler extends DefaultHandler{
             case TITLE:
                 if (again){
                     website.setPageList(new ArrayList<>());
-                   //website.getPageList().add(new Wiki.WikiPage());
+                    website.getPageList().add(new Wiki.WikiPage());
                 }
                 elementValue = new StringBuilder();
                 break;
