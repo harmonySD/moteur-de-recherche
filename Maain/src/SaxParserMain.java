@@ -13,7 +13,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.Map.Entry;
 
+import javax.swing.text.html.parser.Entity;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -46,19 +48,6 @@ public class SaxParserMain {
         return mot_apparition;
     }
 
-    // static void parcours_wiki_to_cli(WikiHandler wiki, Map<String,Integer> dictionnaire){
-    //     Matrice matrice;
-    //     matrice = new Matrice(wiki.getWebsite().getAllPageList().size());
-    //     for(int i=0; i<wiki.getWebsite().getAllPageList().size(); i++ ){
-    //         WikiPage page= wiki.getWebsite().getAllPageList().get(i);
-    //         Map<String, Double> relation_mp= relation_mot_page(dictionnaire, page);
-    //         relation_mp.
-    //         List<Integer> page0 = Arrays.asList( 0,3, 5, 8);
-    //         matrice.insertPage(page0);
-
-    //     }
-
-    // }
 
 
     static double idf(Map<String,Integer> dictionaire, String m){
@@ -257,6 +246,19 @@ public class SaxParserMain {
             CLI.insertPage(tmp);
         }
 
+        //ralation mot page 
+
+        Map<String,Map<String,Double>> relation_mp=new HashMap<>();
+        for(int i=0; i<wikiHandler.getWebsite().getAllPageList().size(); i++ ){
+            System.out.println(i);
+            WikiPage page= wikiHandler.getWebsite().getAllPageList().get(i);
+            System.out.println(page.title);
+            System.out.println(page.getText());
+            relation_mp.put(page.title, relation_mot_page(Dictionnaire, page));
+        }
+
+
+
         // coeef idf a bouger dans le main 
         double coefidf=idf(Dictionnaire, "cinq");
         System.out.println("idf : "+coefidf);
@@ -290,23 +292,6 @@ public class SaxParserMain {
 
         List<Integer> page3 = Arrays.asList(3);
         matrice.insertPage(page3);
-
-
-        // Vecteur u = new Vecteur();
-        //     u.insertValue(1);
-        //     u.insertValue(1);
-        //     u.insertValue(1);
-        //     u.insertValue(1);
-
-        // Vecteur outVecteur = matrice.multiplyByVector(u);
-        // System.out.println(matrice.C); // ca sort dou ca
-        // System.out.println(matrice.L); //L ok 
-        // System.out.println(matrice.I); //cest C !
-
-
-        // System.out.println("u "+u.vecteur);
-        // System.out.println("out "+outVecteur.vecteur);
-        // System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
 
         //PAGE RANK 🥵 a calculer que si again false
         Vecteur pagerank=new Vecteur();
@@ -364,10 +349,46 @@ public class SaxParserMain {
         System.out.println("norme pagerank "+pagerank.getNorme());
 
         // REQUETES
-        HashSet<String> r=requete("toto est la bien au chaud");
+        HashSet<String> r=requete("la vitesse de croisiere du concorde");
         System.out.println(r);
 
-        //
+        // Donner un algorithme eﬀicace qui, à partir de la relation mots-pages,
+        // énumère toutes les pages contenant tous les mots de la requête. 
+        //On ne fera qu’un seul parcours des listes concernant les mots de la requête.
+
+        //liste de pages 
+        List<String> pagesWithAllWord = new ArrayList<String>();
+        Map<String, Map<String, Double>> pagescontainswords= new HashMap<>();
+        Map<String,Integer> pagevalue= new HashMap<>();
+        for(Entry<String, Map<String, Double>> entry: relation_mp.entrySet()){
+            //le mot du tableau relation est contenu dans la requete
+            if(r.contains(entry.getKey())){ 
+                pagescontainswords.put(entry.getKey(),entry.getValue());
+            }
+        }
+        //mettre dans la liste que les pages qui sont dans chaque entry 
+        for(Entry<String, Map<String, Double>> entry: pagescontainswords.entrySet()){
+            for(Entry<String, Double> entry2: entry.getValue().entrySet()){
+                if (pagevalue.containsKey(entry2.getKey())) {
+                    int value = pagevalue.get(entry2.getKey());
+                    value++;
+                    pagevalue.replace(entry2.getKey(), value);
+                } else {
+                    pagevalue.put(entry2.getKey(), 1);
+                }
+            }
+        }
+        //verif si la value de pagevalue == nb de mot de requete
+        int nbMotRequete=r.size();
+        for(Entry<String,Integer> entry: pagevalue.entrySet()){
+            if(entry.getValue()==nbMotRequete){
+                pagesWithAllWord.add(entry.getKey());
+            }
+        }
+        //test
+        System.out.println(pagesWithAllWord.size());
     }
+
+    
 
 }
