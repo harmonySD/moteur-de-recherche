@@ -1,5 +1,6 @@
 package maths;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * Classe représentant un vecteur de Float.
  */
-public class Vecteur {
+public class Vecteur implements Serializable {
     /**
      * Liste contenant les valeurs du vecteur.
      */

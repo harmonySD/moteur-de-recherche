@@ -19,7 +19,7 @@ public class WikiHandler extends DefaultHandler{
     private static Wiki website;
     private StringBuilder elementValue;
     private PrintWriter pw;
-    private boolean again=false;
+    public boolean again=false;
 
     public WikiHandler(Map<String, Integer> mapIdToTitle){
         super();
@@ -177,8 +177,8 @@ public class WikiHandler extends DefaultHandler{
     private void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Pattern p;
         Matcher m;
-        //p = Pattern.compile("aér*|avion");
-        p = Pattern.compile("algo*");
+        p = Pattern.compile("aér*|avion");
+        // p = Pattern.compile("algo*");
         Iterator<Wiki.WikiPage> it = list.iterator();
         list.get(list.size()-1);
 

@@ -9,6 +9,7 @@ import parser.Wiki.WikiPage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.util.*;
@@ -20,6 +21,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 
 public class SaxParserMain {
@@ -306,33 +308,66 @@ public class SaxParserMain {
         // System.out.println("out "+outVecteur.vecteur);
         // System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
 
-        //PAGE RANK 🥵
+        //PAGE RANK 🥵 a calculer que si again false
+        if(!wikiHandler.again){
+            //rempli pi0
+            Vecteur piZero = new Vecteur();
+            int  n=wikiHandler.getWebsite().getAllPageList().size();
+            float unsurn=1f/n;
+            for(int i=0; i<n; i++){
+                piZero.insertValue(unsurn);
+            }
 
-        //rempli pi0
-        Vecteur piZero = new Vecteur();
-        int  n=wikiHandler.getWebsite().getAllPageList().size();
-        float unsurn=1f/n;
-        for(int i=0; i<n; i++){
-            piZero.insertValue(unsurn);
+            System.out.println("norme piO"+piZero.getNorme());
+            //calcul pagerank (produit matrice vecteur)
+            Vecteur pagerank=piZero;
+            for(int i = 0; i<2; i++){
+                pagerank=CLI.multiplyByVector(pagerank);
+            }
+
+
+            //Serialization du vecteur de pagerank 
+            try {
+                FileOutputStream fileOutputStream
+                        = new FileOutputStream(
+                        "pageRank.txt");
+
+                ObjectOutputStream objectOutputStream
+                        = new ObjectOutputStream(fileOutputStream);
+
+                objectOutputStream.writeObject(pagerank);
+
+                objectOutputStream.close();
+                fileOutputStream.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            Vecteur pagerank;
+            try {
+                FileInputStream fileInputStream
+                        = new FileInputStream(
+                        "pageRank.txt");
+
+                ObjectInputStream objectInputStream
+                        = new ObjectInputStream(fileInputStream);
+
+                pagerank =  (Vecteur) objectInputStream.readObject();
+
+                objectInputStream.close();
+                fileInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
-
-        System.out.println("norme piO"+piZero.getNorme());
-        //calcul pagerank (produit matrice vecteur)
-        Vecteur pagerank=piZero;
-        for(int i = 0; i<2; i++){
-            pagerank=CLI.multiplyByVector(pagerank);
-        }
-        // System.out.println(pagerank);
-
-        System.out.println(CLI.C);
-        System.out.println(CLI.L);
-        System.out.println(CLI.I);
-        // System.out.println(pagerank.vecteur);
 
         // REQUETES
-
         HashSet<String> r=requete("toto est la bien au chaud");
         System.out.println(r);
+
+        //
     }
 
 }

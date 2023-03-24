@@ -156,6 +156,7 @@ public class Matrice {
                 }
             }
         }
+        System.out.println("fini");
         return v;
     }
 }
