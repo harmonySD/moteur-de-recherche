@@ -309,6 +309,7 @@ public class SaxParserMain {
         // System.out.println(Arrays.equals(u.toArray(), outVecteur.toArray()));
 
         //PAGE RANK 🥵 a calculer que si again false
+        Vecteur pagerank=new Vecteur();
         if(!wikiHandler.again){
             //rempli pi0
             Vecteur piZero = new Vecteur();
@@ -320,7 +321,7 @@ public class SaxParserMain {
 
             System.out.println("norme piO"+piZero.getNorme());
             //calcul pagerank (produit matrice vecteur)
-            Vecteur pagerank=piZero;
+            pagerank=piZero;
             for(int i = 0; i<2; i++){
                 pagerank=CLI.multiplyByVector(pagerank);
             }
@@ -344,7 +345,6 @@ public class SaxParserMain {
                 e.printStackTrace();
             }
         }else{
-            Vecteur pagerank;
             try {
                 FileInputStream fileInputStream
                         = new FileInputStream(
@@ -360,8 +360,8 @@ public class SaxParserMain {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
+        System.out.println("norme pagerank "+pagerank.getNorme());
 
         // REQUETES
         HashSet<String> r=requete("toto est la bien au chaud");
