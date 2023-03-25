@@ -2,7 +2,6 @@ package maths;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ public class Vecteur implements Serializable {
      * @param value la valeur à ajouter/modifier dans le vecteur.
      * @param index la position d'ajout/ modification de la valeur.
      */
-    public void insertValueAt(int index, float value){
+    public void insertOrUpdateValueAt(int index, float value){
         if(this.vecteur.size() > index){
             this.vecteur.set(index, value);
         }else {

@@ -6,11 +6,7 @@ import maths.Vecteur;
 import parser.WikiHandler;
 import parser.Wiki.WikiPage;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
@@ -20,10 +16,6 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 
 public class SaxParserMain {
@@ -245,15 +237,22 @@ public class SaxParserMain {
             List<Integer> tmp= new ArrayList<>(links);
             CLI.insertPage(tmp);
         }
+        /*File cli = new File("cli.txt");
+        cli.createNewFile();
+        PrintWriter cliPrint = new PrintWriter(new BufferedWriter(new FileWriter(cli)));
+        cliPrint.println(CLI.C);
+        cliPrint.println(CLI.L);
+        cliPrint.println(CLI.I);
+        cliPrint.close();*/
 
         //ralation mot page 
 
         Map<String,Map<String,Double>> relation_mp=new HashMap<>();
         for(int i=0; i<wikiHandler.getWebsite().getAllPageList().size(); i++ ){
-            System.out.println(i);
+            //System.out.println(i);
             WikiPage page= wikiHandler.getWebsite().getAllPageList().get(i);
-            System.out.println(page.title);
-            System.out.println(page.getText());
+            //System.out.println(page.title);
+            //System.out.println(page.getText());
             relation_mp.put(page.title, relation_mot_page(Dictionnaire, page));
         }
 
@@ -294,8 +293,9 @@ public class SaxParserMain {
         matrice.insertPage(page3);
 
         //PAGE RANK 🥵 a calculer que si again false
-        Vecteur pagerank=new Vecteur();
-        if(!wikiHandler.again){
+        Vecteur pagerank = new Vecteur();
+        File pageRank = new File("pageRank.txt");
+        if(!pageRank.exists()){
             //rempli pi0
             Vecteur piZero = new Vecteur();
             int  n=wikiHandler.getWebsite().getAllPageList().size();
@@ -314,15 +314,9 @@ public class SaxParserMain {
 
             //Serialization du vecteur de pagerank 
             try {
-                FileOutputStream fileOutputStream
-                        = new FileOutputStream(
-                        "pageRank.txt");
-
-                ObjectOutputStream objectOutputStream
-                        = new ObjectOutputStream(fileOutputStream);
-
+                FileOutputStream fileOutputStream = new FileOutputStream(pageRank);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
                 objectOutputStream.writeObject(pagerank);
-
                 objectOutputStream.close();
                 fileOutputStream.close();
             }
@@ -331,15 +325,9 @@ public class SaxParserMain {
             }
         }else{
             try {
-                FileInputStream fileInputStream
-                        = new FileInputStream(
-                        "pageRank.txt");
-
-                ObjectInputStream objectInputStream
-                        = new ObjectInputStream(fileInputStream);
-
+                FileInputStream fileInputStream = new FileInputStream("pageRank.txt");
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
                 pagerank =  (Vecteur) objectInputStream.readObject();
-
                 objectInputStream.close();
                 fileInputStream.close();
             } catch (IOException e) {
@@ -347,17 +335,23 @@ public class SaxParserMain {
             }
         }
         System.out.println("norme pagerank "+pagerank.getNorme());
+        File pageRankValues = new File("pageRankValues.txt");
+        pageRankValues.createNewFile();
+        PrintWriter pageRankPrint = new PrintWriter(new BufferedWriter(new FileWriter(pageRankValues)));
+        pageRankPrint.println(Arrays.toString(pagerank.toArray()));
+        pageRankPrint.close();
 
         // REQUETES
-        HashSet<String> r=requete("la vitesse de croisiere du concorde");
-        System.out.println(r);
+        //HashSet<String> r=requete("la vitesse de croisiere du concorde");
+        HashSet<String> r=requete("algorithme test");
+        //System.out.println(r);
 
-        // Donner un algorithme eﬀicace qui, à partir de la relation mots-pages,
+        // Donner un algorithme efficace qui, à partir de la relation mots-pages,
         // énumère toutes les pages contenant tous les mots de la requête. 
         //On ne fera qu’un seul parcours des listes concernant les mots de la requête.
 
         //liste de pages 
-        List<String> pagesWithAllWord = new ArrayList<String>();
+        List<String> pagesWithAllWord = new ArrayList<>();
         Map<String, Map<String, Double>> pagescontainswords= new HashMap<>();
         Map<String,Integer> pagevalue= new HashMap<>();
         for(Entry<String, Map<String, Double>> entry: relation_mp.entrySet()){

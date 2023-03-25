@@ -37,7 +37,7 @@ public class Matrice {
     public final List<Integer> L;
     /**
      * Indice de la colonne associée au coefficient C. 
-     * 
+     *
      */
     public final List<Integer> I;
 
@@ -58,9 +58,9 @@ public class Matrice {
 
         // C = 1/size. //plus maintenant 
         // C = 1/ (size-nb de 0)
-         for(int i = 0; i < pageIdList.size(); i++){
-             this.C.add(1f/pageIdList.size());
-         }
+        for(int i = 0; i < pageIdList.size(); i++){
+            this.C.add(1f/pageIdList.size());
+        }
 
         // PLUS rempli I indice des id non nul 
         /*int cmp=0;//compteur de 0
@@ -126,34 +126,38 @@ public class Matrice {
         int somme = 0;
         for(int i = 0; i < n; i++){
             for(int j = this.L.get(i);j <= this.L.get(i+1)-1; j++){
-                float valCourante = v.getValueAt(i); 
                 // System.out.println("test "+(this.L.get(i+1)-1));
                 // System.out.println("c"+this.C.get(j));
                 // System.out.println("i"+this.I.get(j+1));
                 // System.out.println("i"+this.I.get(j+2));
                 // System.out.println("u"+u.getValueAt(this.I.get(j)));
-                float valActualisee = valCourante + this.C.get(j) * u.getValueAt(this.I.get(j));
-                // float valActualisee = valCourante + this.C.get(j) * u.getValueAt(i);
-                v.insertValueAt(i, valActualisee);
-                // v.insertValueAt(this.I.get(j), valActualisee);
 
-                //Passage de A0 à A.
-                if(Objects.equals(this.L.get(i), this.L.get(i + 1))){
-                    somme += (1f/n)*u.getValueAt(i);
-                }
+                // Termes de l'opération v[I[j]] += C[j]*u[i].
+                int IAtj = this.I.get(j); // I[j]
+                float valueOfv = v.getValueAt(IAtj); // v[I[j]]
+                float CAtj = this.C.get(j); // C[j]
+                float uAti = u.getValueAt(i); // u[i]
+                // Calcul de la nouvelle valeur v[I[j]] += C[j]*u[i].
+                float newValueOfv = valueOfv + (CAtj * uAti);
+                // Remplacement dans le vecteur.
+                v.insertOrUpdateValueAt(IAtj, newValueOfv);
+            }
+            //Passage de A0 à A.
+            if(Objects.equals(this.L.get(i), this.L.get(i + 1))){
+                somme += (1f/n) * u.getValueAt(i);
+            }
 
-                //Passage de A à Ag.
-                // System.out.println("normee"+v.getNorme());
-                // System.out.println(n);
-                for(int k = 0; k < n; k++){
-                    // System.out.println ("k"+k);
+            //Passage de A à Ag.
+            // System.out.println("normee"+v.getNorme());
+            // System.out.println(n);
+            for(int k = 0; k < n; k++){
+                // System.out.println ("k"+k);
 
-                    // System.out.println(v.getNorme());
-                    float val = v.getValueAt(k) + somme;
-                    // System.out.println("v"+val);
-                    float valEpsilon = (1f - Constantes.epsilon)*val+(Constantes.epsilon/n);
-                    v.insertValueAt(k, valEpsilon);
-                }
+                // System.out.println(v.getNorme());
+                float valueOfvPlusSomme = v.getValueAt(k) + somme;
+                // System.out.println("v"+valueOfvPlusSomme);
+                float vEpsilon = (1f - Constantes.epsilon) * valueOfvPlusSomme + (Constantes.epsilon/n);
+                v.insertOrUpdateValueAt(k, vEpsilon);
             }
         }
         System.out.println("fini");
