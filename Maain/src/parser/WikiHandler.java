@@ -65,8 +65,8 @@ public class WikiHandler extends DefaultHandler{
             nbwikipage=website.allPageList.size();
         }
 
-        System.out.println("il me reste "+website.allPageList.size()+" pages");
-        System.out.println("nbwikipage "+nbwikipage);
+        // System.out.println("il me reste "+website.allPageList.size()+" pages");
+        // System.out.println("nbwikipage "+nbwikipage);
         // for(int i=0; i<website.allPageList.size();i++){
         //     System.out.println(website.allPageList.get(i).title);
         // }

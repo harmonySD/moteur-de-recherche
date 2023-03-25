@@ -194,10 +194,10 @@ public class SaxParserMain {
                 }
             }
         }
-        for(Entry<String,Double> en: sortedScore.entrySet()){
-            System.out.println("titre : " + en.getKey());
-            System.out.println("score value : " +en.getValue());
-        }
+        // for(Entry<String,Double> en: sortedScore.entrySet()){
+        //     System.out.println("titre : " + en.getKey());
+        //     System.out.println("score value : " +en.getValue());
+        // }
         return sortedScore;
     }
 
@@ -221,7 +221,6 @@ public class SaxParserMain {
                         = new ObjectInputStream(fileInputStream);
 
                 pagesLinks=(List<List<Integer>>) objectInputStream.readObject();
-                System.out.println("TOTO "+pagesLinks.size());
 
                 objectInputStream.close();
                 fileInputStream.close();
@@ -319,13 +318,6 @@ public class SaxParserMain {
             //System.out.println(page.getText());
             relation_mp.put(page.title, relation_mot_page(Dictionnaire, page));
         }
-
-
-
-        // coeef idf a bouger dans le main 
-        double coefidf=idf(Dictionnaire, "cinq");
-        System.out.println("idf : "+coefidf);
-
         //map avec pour chaque mot 
         // TF
         //renvoyer map <mot,<title, tf>>
@@ -357,7 +349,7 @@ public class SaxParserMain {
         matrice.insertPage(page3);
 
         //PAGE RANK 🥵 a calculer que si again false
-        System.out.println("Début du Page Rank");
+        // System.out.println("Début du Page Rank");
         long chrono = System.currentTimeMillis();
         Vecteur pagerank = new Vecteur();
         File pageRank = new File("pageRank.txt");
@@ -370,7 +362,7 @@ public class SaxParserMain {
                 piZero.insertValue(unsurn);
             }
 
-            System.out.println("norme piO"+piZero.getNorme());
+            // System.out.println("norme piO"+piZero.getNorme());
             //calcul pagerank (produit matrice vecteur)
             pagerank=piZero;
             for(int k = 0; k<Constantes.kIterations; k++){
@@ -399,57 +391,15 @@ public class SaxParserMain {
                 e.printStackTrace();
             }
         }
-        System.out.println("norme pagerank "+pagerank.getNorme());
-        System.out.println("PageRank avec " + Constantes.kIterations + " itérations" + " en " + (System.currentTimeMillis()-chrono) + " ms");
+        // System.out.println("norme pagerank "+pagerank.getNorme());
+        // System.out.println("PageRank avec " + Constantes.kIterations + " itérations" + " en " + (System.currentTimeMillis()-chrono) + " ms");
         File pageRankValues = new File("pageRankValues.txt");
         pageRankValues.createNewFile();
         PrintWriter pageRankPrint = new PrintWriter(new BufferedWriter(new FileWriter(pageRankValues)));
         pageRankPrint.println(Arrays.toString(pagerank.toArray()));
         pageRankPrint.close();
 
-        // REQUETES
-        //HashSet<String> r=requete("la vitesse de croisiere du concorde");
-        HashSet<String> r=requete("avion");
-        System.out.println(r);
 
-        // Donner un algorithme efficace qui, à partir de la relation mots-pages,
-        // énumère toutes les pages contenant tous les mots de la requête. 
-        //On ne fera qu’un seul parcours des listes concernant les mots de la requête.
-
-        //liste de pages 
-        List<String> pagesWithAllWord = new ArrayList<>();
-        Map<String, Map<String, Double>> pagescontainswords= new HashMap<>();
-        Map<String,Integer> pagevalue= new HashMap<>();
-        for(Entry<String, Map<String, Double>> entry: relation_mp.entrySet()){
-            //le mot du tableau relation est contenu dans la requete
-            for(Entry<String, Double> entry2 : entry.getValue().entrySet()){
-                if(r.contains(entry2.getKey())){
-                    // System.out.println(entry2.getKey());
-                    pagescontainswords.put(entry.getKey(),entry.getValue());
-                }
-            }
-        }
-        //mettre dans la liste que les pages qui sont dans chaque entry 
-        for(Entry<String, Map<String, Double>> entry: pagescontainswords.entrySet()){
-            // for(Entry<String, Double> entry2: entry.getValue().entrySet()){
-            // System.out.println("entry "+entry.getKey());
-            // System.out.println("entry2 "+entry2.getKey());
-            if (pagevalue.containsKey(entry.getKey())) {
-                int value = pagevalue.get(entry.getKey());
-                value++;
-                pagevalue.replace(entry.getKey(), value);
-            } else {
-                pagevalue.put(entry.getKey(), 1);
-            }
-            // }
-        }
-        //verif si la value de pagevalue == nb de mot de requete
-        int nbMotRequete=r.size();
-        for(Entry<String,Integer> entry: pagevalue.entrySet()){
-            if(entry.getValue()==nbMotRequete){
-                pagesWithAllWord.add(entry.getKey());
-            }
-        }
         //test
         //System.out.println("pagesWithAllWor "+pagesWithAllWord.get(0));
         // System.out.println("pagevalue "+pagevalue.size());
@@ -460,7 +410,84 @@ public class SaxParserMain {
         //mapIdToTitle.get(Titre) pour récupérer l'id de la page duquel on veut le pagerank
         //Vecteur.getValue(id page) pour avoir le pagerank
         // tfnorm :  map <mot,<title, tf>>
-        scoring(r,pagesWithAllWord,tfnorm,pagerank);
+
+        //scoring(r,pagesWithAllWord,tfnorm,pagerank);
+
+        //prompt 
+        System.out.println(" _______  .-./`)     .-''-.  ,---.   .--.,---.  ,---.   .-''-.  ,---.   .--.  ___    _     .-''-.   \r\n\\  ____  \\\\ .-.')  .'_ _   \\ |    \\  |  ||   /  |   | .'_ _   \\ |    \\  |  |.'   |  | |  .'_ _   \\  \r\n| |    \\ |/ `-' \\ / ( ` )   '|  ,  \\ |  ||  |   |  .'/ ( ` )   '|  ,  \\ |  ||   .'  | | / ( ` )   ' \r\n| |____/ / `-'`\"`. (_ o _)  ||  |\\_ \\|  ||  | _ |  |. (_ o _)  ||  |\\_ \\|  |.'  '_  | |. (_ o _)  | \r\n|   _ _ '. .---. |  (_,_)___||  _( )_\\  ||  _( )_  ||  (_,_)___||  _( )_\\  |'   ( \\.-.||  (_,_)___| \r\n|  ( ' )  \\|   | '  \\   .---.| (_ o _)  |\\ (_ o._) /'  \\   .---.| (_ o _)  |' (`. _` /|'  \\   .---. \r\n| (_{;}_) ||   |  \\  `-'    /|  (_,_)\\  | \\ (_,_) /  \\  `-'    /|  (_,_)\\  || (_ (_) _) \\  `-'    / \r\n|  (_,_)  /|   |   \\       / |  |    |  |  \\     /    \\       / |  |    |  | \\ /  . \\ /  \\       /  \r\n/_______.' '---'    `'-..-'  '--'    '--'   `---`      `'-..-'  '--'    '--'  ``-'`-''    `'-..-'   \r\n                                                                                                    \r\n");
+        System.out.println("************************************************");
+        System.out.println("Nombre de pages :"+WikiHandler.nbwikipage);
+        System.out.println("Norme pagerank :"+pagerank.getNorme());
+        System.out.println("PageRank avec " + Constantes.kIterations + " itérations" + " en " + (System.currentTimeMillis()-chrono) + " ms");
+        System.out.println("Pour quitter saisir q ");
+        System.out.println("Bonne recherche !");
+        System.out.println("************************************************");
+
+
+        boolean stop=false;
+        
+        try (Scanner sc = new Scanner(System.in)) {
+            while(!stop){
+                System.out.println("Veuillez saisir votre recherche :");
+                String str = sc.nextLine();
+
+                if(str.equals("q")){
+                    stop=true;
+                }else{
+                    // REQUETES
+                    HashSet<String> r=requete(str);
+
+                    // Donner un algorithme efficace qui, à partir de la relation mots-pages,
+                    // énumère toutes les pages contenant tous les mots de la requête. 
+                    //On ne fera qu’un seul parcours des listes concernant les mots de la requête.
+
+                    //liste de pages 
+                    List<String> pagesWithAllWord = new ArrayList<>();
+                    Map<String, Map<String, Double>> pagescontainswords= new HashMap<>();
+                    Map<String,Integer> pagevalue= new HashMap<>();
+                    for(Entry<String, Map<String, Double>> entry: relation_mp.entrySet()){
+                        //le mot du tableau relation est contenu dans la requete
+                        for(Entry<String, Double> entry2 : entry.getValue().entrySet()){
+                            if(r.contains(entry2.getKey())){
+                                // System.out.println(entry2.getKey());
+                                pagescontainswords.put(entry.getKey(),entry.getValue());
+                            }
+                        }
+                    }
+                    //mettre dans la liste que les pages qui sont dans chaque entry 
+                    for(Entry<String, Map<String, Double>> entry: pagescontainswords.entrySet()){
+                        if (pagevalue.containsKey(entry.getKey())) {
+                            int value = pagevalue.get(entry.getKey());
+                            value++;
+                            pagevalue.replace(entry.getKey(), value);
+                        } else {
+                            pagevalue.put(entry.getKey(), 1);
+                        }
+                    }
+                    //verif si la value de pagevalue == nb de mot de requete
+                    int nbMotRequete=r.size();
+                    for(Entry<String,Integer> entry: pagevalue.entrySet()){
+                        if(entry.getValue()==nbMotRequete){
+                            pagesWithAllWord.add(entry.getKey());
+                        }
+                    }
+                    //scoring
+                    
+                    Map<String, Double> sortedScore=scoring(r,pagesWithAllWord,tfnorm,pagerank);
+                    System.out.println(sortedScore.size()+" resultats trouver");
+                    Iterator<Entry<String, Double>> iterator = sortedScore.entrySet().iterator();
+                    int i=0;
+                    while (iterator.hasNext() && i<10){
+                        i++;
+                        Entry<String, Double> entry = iterator.next();
+                        String search=entry.getKey();
+                        search = search.replaceAll("\s","_");
+                        System.out.println("https://fr.wikipedia.org/wiki/"+search+"      (score value :  "+entry.getValue()+")");
+                    }
+                }
+                System.out.println("-------------------------");
+            }
+        }
     }
 
 
