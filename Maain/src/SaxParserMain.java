@@ -327,7 +327,7 @@ public class SaxParserMain {
             try {
                 FileInputStream fileInputStream = new FileInputStream("pageRank.txt");
                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                pagerank =  (Vecteur) objectInputStream.readObject();
+                pagerank = (Vecteur) objectInputStream.readObject();
                 objectInputStream.close();
                 fileInputStream.close();
             } catch (IOException e) {
@@ -343,8 +343,8 @@ public class SaxParserMain {
 
         // REQUETES
         //HashSet<String> r=requete("la vitesse de croisiere du concorde");
-        HashSet<String> r=requete("algorithme test");
-        //System.out.println(r);
+        HashSet<String> r=requete("avion");
+        System.out.println(r);
 
         // Donner un algorithme efficace qui, à partir de la relation mots-pages,
         // énumère toutes les pages contenant tous les mots de la requête. 
@@ -356,8 +356,11 @@ public class SaxParserMain {
         Map<String,Integer> pagevalue= new HashMap<>();
         for(Entry<String, Map<String, Double>> entry: relation_mp.entrySet()){
             //le mot du tableau relation est contenu dans la requete
-            if(r.contains(entry.getKey())){ 
+            for(Entry<String, Double> entry2 : entry.getValue().entrySet()){
+                if(r.contains(entry2.getKey())){ 
+                    // System.out.println(entry2.getKey());
                 pagescontainswords.put(entry.getKey(),entry.getValue());
+            }
             }
         }
         //mettre dans la liste que les pages qui sont dans chaque entry 
@@ -380,7 +383,11 @@ public class SaxParserMain {
             }
         }
         //test
-        System.out.println(pagesWithAllWord.size());
+        System.out.println("pagesWithAllWor "+pagesWithAllWord.size());
+
+        System.out.println("pagevalue "+pagevalue.size());
+
+        System.out.println("pagescontainswords "+pagescontainswords.size());
     }
 
     
