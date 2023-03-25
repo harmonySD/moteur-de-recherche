@@ -159,8 +159,8 @@ public class SaxParserMain {
 
         //Pas possible de compresser avec le for du haut, vu que j'ai besoin de calculé les tf de la page
         // avec tout les mots de la requêtes
-        System.out.println(tfPageCumule);
-        System.out.println(pageRankUtilise);
+       // System.out.println(tfPageCumule);
+        //System.out.println(pageRankUtilise);
         Map<String,Double> scorePage = new HashMap<>();
         for(String title : pagesWithAllWord){
             String defTitle = title.toLowerCase().trim();
