@@ -166,16 +166,17 @@ public class SaxParserMain {
         Map<String,Double> scorePage = new HashMap<>();
         for(String title : pagesWithAllWord){
             String defTitle = title.toLowerCase().trim();
+            if(tfPageCumule.containsKey(defTitle) && tfPageCumule.get(defTitle)!=null && pageRankUtilise.containsKey(defTitle) && pageRankUtilise.get(defTitle)!=null){
+                scorePage.put(title, ((ALPHA * tfPageCumule.get(defTitle)) / r.size()) + (BETA * pageRankUtilise.get(defTitle)));
 
-            if(tfPageCumule.get(defTitle)==null){
-                scorePage.put(title,BETA*pageRankUtilise.get(defTitle));
             }
-            else if(pageRankUtilise.get(defTitle)==null){
+            else if(tfPageCumule.containsKey(defTitle) && tfPageCumule.get(defTitle)!=null && (!pageRankUtilise.containsKey(defTitle) || pageRankUtilise.get(defTitle)==null)){
                 scorePage.put(title,(ALPHA*tfPageCumule.get(defTitle))/r.size());
             }
-            else {
-                scorePage.put(title, ((ALPHA * tfPageCumule.get(defTitle)) / r.size()) + (BETA * pageRankUtilise.get(defTitle)));
+            else if(pageRankUtilise.containsKey(defTitle) && pageRankUtilise.get(defTitle)!=null && (!tfPageCumule.containsKey(defTitle) || tfPageCumule.get(defTitle)==null)){
+                scorePage.put(title,(ALPHA*tfPageCumule.get(defTitle))/r.size());
             }
+
         }
 
         // https://www.digitalocean.com/community/tutorials/sort-hashmap-by-value-java
