@@ -97,13 +97,8 @@ public class Matrice {
      * @return le vecteur résultant de la multiplication.
      */
     public Vecteur multiplyByVector(Vecteur u){
-        System.out.println("u norme"+u.getNorme());
-
-        System.out.println("norme c"+this.C.size());
-        System.out.println("norme i"+this.I.size());
         Vecteur v = new Vecteur(u.getNorme());
-        final int n = this.L.size()-1; // -2, car L est de taille n + 1.
-        System.out.println("n"+n);
+        final int n = this.L.size()-1; 
         int somme = 0;
         for(int i = 0; i < n; i++){
             for(int j = this.L.get(i); j <= this.L.get(i+1)-1; j++){
@@ -131,7 +126,6 @@ public class Matrice {
             float vEpsilon = (1f - Constantes.epsilon) * valueOfvPlusSomme + (Constantes.epsilon/n);
             v.insertOrUpdateValueAt(k, vEpsilon);
         }
-        System.out.println("fini");
         return v;
     }
 }

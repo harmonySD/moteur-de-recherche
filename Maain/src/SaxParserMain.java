@@ -441,21 +441,29 @@ public class SaxParserMain {
                         //le mot du tableau relation est contenu dans la requete
                         for(Entry<String, Double> entry2 : entry.getValue().entrySet()){
                             if(r.contains(entry2.getKey())){
-                                // System.out.println(entry2.getKey());
-                                pagescontainswords.put(entry.getKey(),entry.getValue());
+                            //     // System.out.println(entry2.getKey());
+                            //     pagescontainswords.put(entry.getKey(),entry.getValue());
+                                if (pagevalue.containsKey(entry.getKey())) {
+                                    int value = pagevalue.get(entry.getKey());
+                                    value++;
+                                    pagevalue.replace(entry.getKey(), value);
+                                } else {
+                                    pagevalue.put(entry.getKey(), 1);
+                                }
                             }
                         }
                     }
                     //mettre dans la liste que les pages qui sont dans chaque entry 
-                    for(Entry<String, Map<String, Double>> entry: pagescontainswords.entrySet()){
-                        if (pagevalue.containsKey(entry.getKey())) {
-                            int value = pagevalue.get(entry.getKey());
-                            value++;
-                            pagevalue.replace(entry.getKey(), value);
-                        } else {
-                            pagevalue.put(entry.getKey(), 1);
-                        }
-                    }
+                    // for(Entry<String, Map<String, Double>> entry: pagescontainswords.entrySet()){
+                    //     if (pagevalue.containsKey(entry.getKey())) {
+                    //         System.out.println("ici");
+                    //         int value = pagevalue.get(entry.getKey());
+                    //         value++;
+                    //         pagevalue.replace(entry.getKey(), value);
+                    //     } else {
+                    //         pagevalue.put(entry.getKey(), 1);
+                    //     }
+                    // }
                     //verif si la value de pagevalue == nb de mot de requete
                     int nbMotRequete=r.size();
                     for(Entry<String,Integer> entry: pagevalue.entrySet()){
