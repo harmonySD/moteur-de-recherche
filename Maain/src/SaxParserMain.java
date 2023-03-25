@@ -22,8 +22,8 @@ public class SaxParserMain {
 
     private static Map<String, Integer> mapIdToTitle;
     private static Matrice CLI;
-    private static final double ALPHA = 0.5;
-    private static final double BETA = 0.5;
+    private static final double ALPHA = 0.2845;
+    private static final double BETA = 0.7155;
     static Map<String, Double> relation_mot_page(Map<String,Integer> dictionnaire, WikiPage wikipage){
         Map<String, Double> mot_apparition = new HashMap<>();
         String [] a=wikipage.getText().split(" ");
@@ -170,11 +170,11 @@ public class SaxParserMain {
                 scorePage.put(title, ((ALPHA * tfPageCumule.get(defTitle)) / r.size()) + (BETA * pageRankUtilise.get(defTitle)));
 
             }
-            else if(tfPageCumule.containsKey(defTitle) && tfPageCumule.get(defTitle)!=null && (!pageRankUtilise.containsKey(defTitle) || pageRankUtilise.get(defTitle)==null)){
+            else if(tfPageCumule.containsKey(defTitle) && tfPageCumule.get(defTitle)!=null && (!pageRankUtilise.containsKey(defTitle))){
                 scorePage.put(title,(ALPHA*tfPageCumule.get(defTitle))/r.size());
             }
-            else if(pageRankUtilise.containsKey(defTitle) && pageRankUtilise.get(defTitle)!=null && (!tfPageCumule.containsKey(defTitle) || tfPageCumule.get(defTitle)==null)){
-                scorePage.put(title,(ALPHA*tfPageCumule.get(defTitle))/r.size());
+            else if(pageRankUtilise.containsKey(defTitle) && pageRankUtilise.get(defTitle)!=null && (!tfPageCumule.containsKey(defTitle) )){
+                scorePage.put(title,(BETA*pageRankUtilise.get(defTitle)));
             }
 
         }
