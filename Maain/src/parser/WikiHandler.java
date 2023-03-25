@@ -10,18 +10,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WikiHandler extends DefaultHandler{
-    private static Map<String, Integer> mapIdToTitle = new HashMap<>();
+    private final Map<String, Integer> mapIdToTitle;
     private static final String WIKIS = "mediawiki";
     private static final String PAGE = "page";
     private static final String TITLE = "title";
     private static final String TEXT = "text";
-
-    public static int nbId=0;
     public static int nbwikipage=0;
     private static Wiki website;
     private StringBuilder elementValue;
     private PrintWriter pw;
-    private boolean again=false;
+    public boolean again=false;
+
+    public WikiHandler(Map<String, Integer> mapIdToTitle){
+        super();
+        this.mapIdToTitle = mapIdToTitle;
+    }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
@@ -35,7 +38,8 @@ public class WikiHandler extends DefaultHandler{
     @Override
     public void startDocument() throws SAXException {
         website = new Wiki();
-        File file = new File("/Users/harmonysimon-duchatel/M2/maain/maain_moteurrecherche_wikipedia/mywiki.xml");
+        //File file = new File("/Users/harmonysimon-duchatel/M2/maain/maain_moteurrecherche_wikipedia/mywiki.xml");
+        File file = new File("mywiki.xml");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -48,46 +52,18 @@ public class WikiHandler extends DefaultHandler{
         }else{
             //le fichier existe il a donc deja etet paerser
             //on veut donc juste re remplir les structures ...
-             again=true;
+            again=true;
             website.setAllPageList(new ArrayList<>());
-        }
-
-        // Remise en mémoire de mapIdToTitle.
-        File map = new File("IDMappedToTitle.txt");
-        if(map.exists()) {
-            try {
-                FileInputStream fileInputStream
-                        = new FileInputStream(
-                        map);
-
-                ObjectInputStream objectInputStream
-                        = new ObjectInputStream(fileInputStream);
-
-                mapIdToTitle = (Map<String, Integer>) objectInputStream.readObject();
-
-                objectInputStream.close();
-                fileInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
     @Override
     public void endDocument() throws SAXException{
-        if(again==false){
+        if(!again){
             pw.print("</corpus>");
             pw.close();
         }else{
             nbwikipage=website.allPageList.size();
         }
-        
-        System.out.println("il me reste "+website.allPageList.size()+" pages");
-        System.out.println("nbwikipage "+nbwikipage);
-        // for(int i=0; i<website.allPageList.size();i++){
-        //     System.out.println(website.allPageList.get(i).title);
-        // }
 
         // Serialization of the map for next steps.
         try {
@@ -119,7 +95,7 @@ public class WikiHandler extends DefaultHandler{
                 website.getPageList().add(new Wiki.WikiPage());
                 break;
             case TITLE:
-                if (again==true){
+                if (again){
                     website.setPageList(new ArrayList<>());
                     website.getPageList().add(new Wiki.WikiPage());
                 }
@@ -128,7 +104,7 @@ public class WikiHandler extends DefaultHandler{
             case TEXT:
                 elementValue = new StringBuilder();
                 break;
-            default: 
+            default:
                 break;
         }
     }
@@ -141,7 +117,7 @@ public class WikiHandler extends DefaultHandler{
                 break;
             case TEXT:
                 latestPage().setText(elementValue.toString());
-                if(again==false){
+                if(!again){
                     try {
                         writeToFile(website.getPageList(),pw);
                         //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
@@ -153,17 +129,16 @@ public class WikiHandler extends DefaultHandler{
                 }else{
                     try {
                         rempParam(website.getPageList(), pw);
-                        
-                //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
-                //et ne pas tout stocker
-                website.setPageList(new ArrayList<>());
-                break;
+
+                        //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
+                        //et ne pas tout stocker
+                        website.setPageList(new ArrayList<>());
+                        break;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
                 break;
-            
         }
     }
 
@@ -182,7 +157,7 @@ public class WikiHandler extends DefaultHandler{
         return website;
     }
 
-    private static void rempParam(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
+    private void rempParam(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Iterator<Wiki.WikiPage> it = list.iterator();
         list.get(list.size()-1);
         while (it.hasNext()) {
@@ -193,21 +168,18 @@ public class WikiHandler extends DefaultHandler{
         }
     }
 
-    private static void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
+    private void writeToFile(List<Wiki.WikiPage> list, PrintWriter pw) throws IOException{
         Pattern p;
         Matcher m;
         p = Pattern.compile("aér*|avion");
+        // p = Pattern.compile("algo*");
         Iterator<Wiki.WikiPage> it = list.iterator();
         list.get(list.size()-1);
+
         while (it.hasNext()) {
             Wiki.WikiPage n = it.next();
             m = p.matcher(n.getText().toLowerCase());
             if(m.find()){
-                nbId++;
-                // Set the ID mapped to the article title if it does not already exist.
-                mapIdToTitle.computeIfAbsent(n.getTitle(), k -> nbId);
-                n.setId(mapIdToTitle.get(n.getTitle()));
-
                 // Removes [[Mot_clé:titre…
                 String s = n.getText();
                 String t = n.getTitle();
@@ -239,29 +211,24 @@ public class WikiHandler extends DefaultHandler{
                 s=s.replaceAll("—","");
                 s=s.replaceAll("…","");
                 s=s.replaceAll("/*","");
-                // Search for [[Article]] and replaces it with [[id]].
-                Pattern pattern = Pattern.compile("\\[\\[[[A-Za-zÀ-ÖØ-öø-ÿ]+| ]*]]");
-                Matcher matcher = pattern.matcher(s);
-                StringBuilder sb = new StringBuilder();
-                while (matcher.find()) {
-                    String title = matcher.group(0).substring(2, matcher.group(0).length()-2);
-                    if(!mapIdToTitle.containsKey(title)) {
-                        nbId++;
-                        mapIdToTitle.put(title, nbId);
-                    }
-                    matcher.appendReplacement(sb, "[[" + mapIdToTitle.get(title) + "]]");
-                }
-                matcher.appendTail(sb);
+
                 if (s.length()<999){
                     // System.out.println("page trop courte !");
                 }else{
-                    nbwikipage++;
-                    if(!sb.toString().equals("")) {
+                    // Set the ID mapped to the article title if it does not already exist.
+                    mapIdToTitle.computeIfAbsent(n.getTitle().toLowerCase(), k -> nbwikipage);
+                    n.setId(mapIdToTitle.get(n.getTitle().toLowerCase()));
+
                     website.getAllPageList().add(new Wiki.WikiPage());
                     latestAllPage().setTitle(t);
-                    latestAllPage().setText(sb.toString().toLowerCase());
-                    pw.println("<title>" + t + "</title>\n"  + "<text>" + sb.toString().toLowerCase() + "</text>");
-                    }
+                    latestAllPage().setText(s.toLowerCase());
+                    // Adds the page link to the global list in order to populate the CLI later.
+                    //this.pagesLinks.add(pageLinks);
+
+                    // Write the cleaned page to file.
+                    pw.println("<title>" + t + "</title>\n"  + "<text>" + s.toLowerCase() + "</text>");
+
+                    nbwikipage++;
                 }
             }
         }
