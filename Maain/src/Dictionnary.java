@@ -11,10 +11,6 @@ public class Dictionnary extends DefaultHandler {
     private final List<List<Integer>> pagesLinks;
     private final Map<String, Integer> readOnlyMapIdToTitle;
 
-    //Properties props = new Properties();
-    //props.load(IOUtils.readerFromString("StanfordCoreNLP-french.properties"));
-    //StanfordCoreNLP corenlp = new StanfordCoreNLP(props);
-
     private static SortedSet<Map.Entry<String,Integer>> treemap = new TreeSet<>();
     private static final int ARBITRARYNUMBEROFWORDS = 20000;
     public static final HashSet<String> IgnoredWords = new HashSet<>(Arrays.asList("le", "la", "les", "à", "de", "des"
@@ -61,7 +57,6 @@ public class Dictionnary extends DefaultHandler {
             matcher.appendTail(sb);
 
             if(strCurrentLine.contains("</text>")){
-                //System.out.println("DICO FIN DE PAGE");
                 pagesLinks.add(pageLinks);
                 pageLinks = new ArrayList<>();
             }
