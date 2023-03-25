@@ -153,7 +153,9 @@ public class SaxParserMain {
                         tfPageCumule.put(defTitle,tfnorm.get(wordRequest).get(defTitle));
                     }
                 }
-                pageRankUtilise.put(defTitle,(double) pagerank.getValueAt(mapIdToTitle.get(defTitle)));
+                if(pagerank.getValueAt(mapIdToTitle.get(defTitle))!=0.0f) {
+                    pageRankUtilise.put(defTitle, (double) pagerank.getValueAt(mapIdToTitle.get(defTitle)));
+                }
             }
         }
 
