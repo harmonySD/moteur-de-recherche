@@ -22,7 +22,8 @@ public class SaxParserMain {
 
     private static Map<String, Integer> mapIdToTitle;
     private static Matrice CLI;
-
+    private static final double ALPHA = 0.5;
+    private static final double BETA = 0.5;
     static Map<String, Double> relation_mot_page(Map<String,Integer> dictionnaire, WikiPage wikipage){
         Map<String, Double> mot_apparition = new HashMap<>();
         String [] a=wikipage.getText().split(" ");
@@ -135,6 +136,65 @@ public class SaxParserMain {
             }
         }
         return rqcorrect;
+    }
+
+    private static LinkedHashMap<String,Double> scoring(HashSet<String> r,List<String> pagesWithAllWord, Map<String,Map<String, Double>> tfnorm, Vecteur pagerank){
+        Map<String,Double> tfPageCumule = new HashMap<>();
+        Map<String,Double> pageRankUtilise = new HashMap<>();
+        for(String wordRequest : r){
+            for(String title : pagesWithAllWord){
+                String defTitle = title.toLowerCase().trim();
+                if(tfnorm.get(wordRequest).containsKey(defTitle)){
+
+                    if(tfPageCumule.containsKey(title)){
+                        tfPageCumule.replace(defTitle,tfPageCumule.get(defTitle)+tfnorm.get(wordRequest).get(defTitle));
+                    }
+                    else{
+                        tfPageCumule.put(defTitle,tfnorm.get(wordRequest).get(defTitle));
+                    }
+                }
+                pageRankUtilise.put(defTitle,(double) pagerank.getValueAt(mapIdToTitle.get(defTitle)));
+            }
+        }
+
+        //Pas possible de compresser avec le for du haut, vu que j'ai besoin de calculé les tf de la page
+        // avec tout les mots de la requêtes
+        System.out.println(tfPageCumule);
+        System.out.println(pageRankUtilise);
+        Map<String,Double> scorePage = new HashMap<>();
+        for(String title : pagesWithAllWord){
+            String defTitle = title.toLowerCase().trim();
+
+            if(tfPageCumule.get(defTitle)==null){
+                scorePage.put(title,BETA*pageRankUtilise.get(defTitle));
+            }
+            else if(pageRankUtilise.get(defTitle)==null){
+                scorePage.put(title,(ALPHA*tfPageCumule.get(defTitle))/r.size());
+            }
+            else {
+                scorePage.put(title, ((ALPHA * tfPageCumule.get(defTitle)) / r.size()) + (BETA * pageRankUtilise.get(defTitle)));
+            }
+        }
+
+        // https://www.digitalocean.com/community/tutorials/sort-hashmap-by-value-java
+        LinkedHashMap<String, Double> sortedScore = new LinkedHashMap<>();
+        ArrayList<Double> list = new ArrayList<>();
+        for (Map.Entry<String, Double> entry : scorePage.entrySet()) {
+            list.add(entry.getValue());
+        }
+        Collections.sort(list);
+        Collections.reverse(list);
+        for (double num : list) {
+            for (Entry<String, Double> entry : scorePage.entrySet()) {
+                if (entry.getValue().equals(num)) {
+                    sortedScore.put(entry.getKey(), num);
+                }
+            }
+        }
+        for(Entry<String,Double> en: sortedScore.entrySet()){
+            System.out.println("score value : " +en.getValue());
+        }
+        return sortedScore;
     }
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException {
@@ -266,11 +326,11 @@ public class SaxParserMain {
         // TF
         //renvoyer map <mot,<title, tf>>
 
-        // Map<String,Map<String, Double>> tf = term_freq(Dictionnaire, wikiHandler);
-        // Map<String,Double> normeVect = norme_vecteur(tf);
-        // Map<String,Map<String, Double>> tfnorm = coeff_TF_normalise(normeVect, tf);
+        Map<String,Map<String, Double>> tf = term_freq(Dictionnaire, wikiHandler);
+        Map<String,Double> normeVect = norme_vecteur(tf);
+        Map<String,Map<String, Double>> tfnorm = coeff_TF_normalise(normeVect, tf);
 
-        // Map<String,Map<String, Double>> list_page_mot_tf= supp_page_tf_faible(tf, tfnorm, Dictionnaire);
+        Map<String,Map<String, Double>> list_page_mot_tf= supp_page_tf_faible(tf, tfnorm, Dictionnaire);
         // System.out.println(list_page_mot_tf.size());
 
 
@@ -357,24 +417,24 @@ public class SaxParserMain {
         for(Entry<String, Map<String, Double>> entry: relation_mp.entrySet()){
             //le mot du tableau relation est contenu dans la requete
             for(Entry<String, Double> entry2 : entry.getValue().entrySet()){
-                if(r.contains(entry2.getKey())){ 
+                if(r.contains(entry2.getKey())){
                     // System.out.println(entry2.getKey());
-                pagescontainswords.put(entry.getKey(),entry.getValue());
-            }
+                    pagescontainswords.put(entry.getKey(),entry.getValue());
+                }
             }
         }
         //mettre dans la liste que les pages qui sont dans chaque entry 
         for(Entry<String, Map<String, Double>> entry: pagescontainswords.entrySet()){
             // for(Entry<String, Double> entry2: entry.getValue().entrySet()){
-                // System.out.println("entry "+entry.getKey());
-                // System.out.println("entry2 "+entry2.getKey());
-                if (pagevalue.containsKey(entry.getKey())) {
-                    int value = pagevalue.get(entry.getKey());
-                    value++;
-                    pagevalue.replace(entry.getKey(), value);
-                } else {
-                    pagevalue.put(entry.getKey(), 1);
-                }
+            // System.out.println("entry "+entry.getKey());
+            // System.out.println("entry2 "+entry2.getKey());
+            if (pagevalue.containsKey(entry.getKey())) {
+                int value = pagevalue.get(entry.getKey());
+                value++;
+                pagevalue.replace(entry.getKey(), value);
+            } else {
+                pagevalue.put(entry.getKey(), 1);
+            }
             // }
         }
         //verif si la value de pagevalue == nb de mot de requete
@@ -385,14 +445,18 @@ public class SaxParserMain {
             }
         }
         //test
-        System.out.println("pagesWithAllWor "+pagesWithAllWord.get(0));
-        System.out.println("pagesWithAllWor "+pagesWithAllWord.get(1));
-        System.out.println("pagesWithAllWor "+pagesWithAllWord.get(2));
+        //System.out.println("pagesWithAllWor "+pagesWithAllWord.get(0));
         // System.out.println("pagevalue "+pagevalue.size());
 
         // System.out.println("pagescontainswords "+pagescontainswords.size());
+
+        //pagewithallword contient les titres des pages a sortir
+        //mapIdToTitle.get(Titre) pour récupérer l'id de la page duquel on veut le pagerank
+        //Vecteur.getValue(id page) pour avoir le pagerank
+        // tfnorm :  map <mot,<title, tf>>
+        scoring(r,pagesWithAllWord,tfnorm,pagerank);
     }
 
-    
+
 
 }
