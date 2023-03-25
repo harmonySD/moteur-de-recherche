@@ -98,16 +98,17 @@ public class Matrice {
      * Pseudo code de l'algorithme :
      *     somme = 0
      *     Pour i de 0 à |L|-2
-     *         Pour j de L[i] à L[i+1]-1
-     *             v[I[j]] += C[j]*u[i]
-     *
-     *     //Passage de A0 à A.
-     *         Si L[i]=L[i+1]
-     *             somme += 1/n*u[i]
+     *      |  Pour j de L[i] à L[i+1]-1
+     *      |   |  v[I[j]] += C[j]*u[i]
+     *      |   |
+     *      |  //Passage de A0 à A.
+     *      |  Si L[i]=L[i+1]
+     *      |   |  somme += 1/n*u[i]
      *     //Passage de A à Ag.
-     *         Pour k de 0 à n
-     *             v[k] += somme
-     *             v[k] = (1-epsilon)*v[k]+(epsilon/n)
+     *     somme = somme/n
+ *         Pour k de 0 à n
+ *          |  v[k] += somme
+ *          |  v[k] = (1-epsilon)*v[k]+(epsilon/n)
      * @param u le vecteur.
      * @return le vecteur résultant de la multiplication.
      */
@@ -125,7 +126,7 @@ public class Matrice {
         System.out.println("n"+n);
         int somme = 0;
         for(int i = 0; i < n; i++){
-            for(int j = this.L.get(i);j <= this.L.get(i+1)-1; j++){
+            for(int j = this.L.get(i); j <= this.L.get(i+1)-1; j++){
                 // System.out.println("test "+(this.L.get(i+1)-1));
                 // System.out.println("c"+this.C.get(j));
                 // System.out.println("i"+this.I.get(j+1));
@@ -146,19 +147,19 @@ public class Matrice {
             if(Objects.equals(this.L.get(i), this.L.get(i + 1))){
                 somme += (1f/n) * u.getValueAt(i);
             }
+        }
+        somme = somme/n;
+        //Passage de A à Ag.
+        // System.out.println("normee"+v.getNorme());
+        // System.out.println(n);
+        for(int k = 0; k < n; k++){
+            // System.out.println ("k"+k);
 
-            //Passage de A à Ag.
-            // System.out.println("normee"+v.getNorme());
-            // System.out.println(n);
-            for(int k = 0; k < n; k++){
-                // System.out.println ("k"+k);
-
-                // System.out.println(v.getNorme());
-                float valueOfvPlusSomme = v.getValueAt(k) + somme;
-                // System.out.println("v"+valueOfvPlusSomme);
-                float vEpsilon = (1f - Constantes.epsilon) * valueOfvPlusSomme + (Constantes.epsilon/n);
-                v.insertOrUpdateValueAt(k, vEpsilon);
-            }
+            // System.out.println(v.getNorme());
+            float valueOfvPlusSomme = v.getValueAt(k) + somme;
+            // System.out.println("v"+valueOfvPlusSomme);
+            float vEpsilon = (1f - Constantes.epsilon) * valueOfvPlusSomme + (Constantes.epsilon/n);
+            v.insertOrUpdateValueAt(k, vEpsilon);
         }
         System.out.println("fini");
         return v;

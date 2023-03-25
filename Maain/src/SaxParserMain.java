@@ -5,13 +5,13 @@ import maths.Matrice;
 import maths.Vecteur;
 import parser.WikiHandler;
 import parser.Wiki.WikiPage;
+import utils.Constantes;
 
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
 
-import javax.swing.text.html.parser.Entity;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -354,6 +354,8 @@ public class SaxParserMain {
         matrice.insertPage(page3);
 
         //PAGE RANK 🥵 a calculer que si again false
+        System.out.println("Début du Page Rank");
+        long chrono = System.currentTimeMillis();
         Vecteur pagerank = new Vecteur();
         File pageRank = new File("pageRank.txt");
         if(!pageRank.exists()){
@@ -368,10 +370,9 @@ public class SaxParserMain {
             System.out.println("norme piO"+piZero.getNorme());
             //calcul pagerank (produit matrice vecteur)
             pagerank=piZero;
-            for(int i = 0; i<2; i++){
+            for(int k = 0; k<Constantes.kIterations; k++){
                 pagerank=CLI.multiplyByVector(pagerank);
             }
-
 
             //Serialization du vecteur de pagerank 
             try {
@@ -396,6 +397,7 @@ public class SaxParserMain {
             }
         }
         System.out.println("norme pagerank "+pagerank.getNorme());
+        System.out.println("PageRank avec " + Constantes.kIterations + " itérations" + " en " + (System.currentTimeMillis()-chrono) + " ms");
         File pageRankValues = new File("pageRankValues.txt");
         pageRankValues.createNewFile();
         PrintWriter pageRankPrint = new PrintWriter(new BufferedWriter(new FileWriter(pageRankValues)));
