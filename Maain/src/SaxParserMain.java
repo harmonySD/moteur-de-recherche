@@ -192,6 +192,7 @@ public class SaxParserMain {
             }
         }
         for(Entry<String,Double> en: sortedScore.entrySet()){
+            System.out.println("titre : " + en.getKey());
             System.out.println("score value : " +en.getValue());
         }
         return sortedScore;
