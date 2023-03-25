@@ -365,15 +365,17 @@ public class SaxParserMain {
         }
         //mettre dans la liste que les pages qui sont dans chaque entry 
         for(Entry<String, Map<String, Double>> entry: pagescontainswords.entrySet()){
-            for(Entry<String, Double> entry2: entry.getValue().entrySet()){
-                if (pagevalue.containsKey(entry2.getKey())) {
-                    int value = pagevalue.get(entry2.getKey());
+            // for(Entry<String, Double> entry2: entry.getValue().entrySet()){
+                // System.out.println("entry "+entry.getKey());
+                // System.out.println("entry2 "+entry2.getKey());
+                if (pagevalue.containsKey(entry.getKey())) {
+                    int value = pagevalue.get(entry.getKey());
                     value++;
-                    pagevalue.replace(entry2.getKey(), value);
+                    pagevalue.replace(entry.getKey(), value);
                 } else {
-                    pagevalue.put(entry2.getKey(), 1);
+                    pagevalue.put(entry.getKey(), 1);
                 }
-            }
+            // }
         }
         //verif si la value de pagevalue == nb de mot de requete
         int nbMotRequete=r.size();
@@ -383,11 +385,12 @@ public class SaxParserMain {
             }
         }
         //test
-        System.out.println("pagesWithAllWor "+pagesWithAllWord.size());
+        System.out.println("pagesWithAllWor "+pagesWithAllWord.get(0));
+        System.out.println("pagesWithAllWor "+pagesWithAllWord.get(1));
+        System.out.println("pagesWithAllWor "+pagesWithAllWord.get(2));
+        // System.out.println("pagevalue "+pagevalue.size());
 
-        System.out.println("pagevalue "+pagevalue.size());
-
-        System.out.println("pagescontainswords "+pagescontainswords.size());
+        // System.out.println("pagescontainswords "+pagescontainswords.size());
     }
 
     
