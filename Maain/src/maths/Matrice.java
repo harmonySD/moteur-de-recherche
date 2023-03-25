@@ -56,28 +56,12 @@ public class Matrice {
         //Trier la liste
         Collections.sort(pageIdList);
 
-        // C = 1/size. //plus maintenant 
-        // C = 1/ (size-nb de 0)
+        // C = 1/size.
         for(int i = 0; i < pageIdList.size(); i++){
             this.C.add(1f/pageIdList.size());
         }
 
-        // PLUS rempli I indice des id non nul 
-        /*int cmp=0;//compteur de 0
-        for(int i = 0; i < pageIdList.size(); i++){
-            if(pageIdList.get(i)==0){
-                cmp++;
-            }else{
-                this.I.add(i);
-            }
-        }
-        if(cmp!=n){
-            for(int i=0; i< pageIdList.size()-cmp; i++){
-                this.C.add(1f/(pageIdList.size()-cmp));
-            }
-        }*/
         // L = Indice de début de la page.
-
         int indiceDebutPage = 0;
         if(this.L.size() != 0){
             indiceDebutPage =  pageIdList.size() + this.L.get(this.L.size()-1);
@@ -114,11 +98,7 @@ public class Matrice {
      */
     public Vecteur multiplyByVector(Vecteur u){
         System.out.println("u norme"+u.getNorme());
-        // u.getValueAt(0);
-        // System.out.println("ok");
-        // u.getValueAt(173718);
-        // System.out.println("ok");
-        // u.getValueAt(173719);
+
         System.out.println("norme c"+this.C.size());
         System.out.println("norme i"+this.I.size());
         Vecteur v = new Vecteur(u.getNorme());
@@ -127,11 +107,6 @@ public class Matrice {
         int somme = 0;
         for(int i = 0; i < n; i++){
             for(int j = this.L.get(i); j <= this.L.get(i+1)-1; j++){
-                // System.out.println("test "+(this.L.get(i+1)-1));
-                // System.out.println("c"+this.C.get(j));
-                // System.out.println("i"+this.I.get(j+1));
-                // System.out.println("i"+this.I.get(j+2));
-                // System.out.println("u"+u.getValueAt(this.I.get(j)));
 
                 // Termes de l'opération v[I[j]] += C[j]*u[i].
                 int IAtj = this.I.get(j); // I[j]
@@ -150,14 +125,9 @@ public class Matrice {
         }
         somme = somme/n;
         //Passage de A à Ag.
-        // System.out.println("normee"+v.getNorme());
-        // System.out.println(n);
-        for(int k = 0; k < n; k++){
-            // System.out.println ("k"+k);
 
-            // System.out.println(v.getNorme());
+        for(int k = 0; k < n; k++){
             float valueOfvPlusSomme = v.getValueAt(k) + somme;
-            // System.out.println("v"+valueOfvPlusSomme);
             float vEpsilon = (1f - Constantes.epsilon) * valueOfvPlusSomme + (Constantes.epsilon/n);
             v.insertOrUpdateValueAt(k, vEpsilon);
         }

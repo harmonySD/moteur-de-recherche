@@ -399,19 +399,10 @@ public class SaxParserMain {
         pageRankPrint.println(Arrays.toString(pagerank.toArray()));
         pageRankPrint.close();
 
-
-        //test
-        //System.out.println("pagesWithAllWor "+pagesWithAllWord.get(0));
-        // System.out.println("pagevalue "+pagevalue.size());
-
-        // System.out.println("pagescontainswords "+pagescontainswords.size());
-
-        //pagewithallword contient les titres des pages a sortir
-        //mapIdToTitle.get(Titre) pour récupérer l'id de la page duquel on veut le pagerank
-        //Vecteur.getValue(id page) pour avoir le pagerank
-        // tfnorm :  map <mot,<title, tf>>
-
-        //scoring(r,pagesWithAllWord,tfnorm,pagerank);
+        float pageRankSum = 0.0f;
+        for(int i = 0; i < pagerank.getNorme(); i++){
+            pageRankSum += pagerank.getValueAt(i);
+        }
 
         //prompt 
         System.out.println(" _______  .-./`)     .-''-.  ,---.   .--.,---.  ,---.   .-''-.  ,---.   .--.  ___    _     .-''-.   \r\n\\  ____  \\\\ .-.')  .'_ _   \\ |    \\  |  ||   /  |   | .'_ _   \\ |    \\  |  |.'   |  | |  .'_ _   \\  \r\n| |    \\ |/ `-' \\ / ( ` )   '|  ,  \\ |  ||  |   |  .'/ ( ` )   '|  ,  \\ |  ||   .'  | | / ( ` )   ' \r\n| |____/ / `-'`\"`. (_ o _)  ||  |\\_ \\|  ||  | _ |  |. (_ o _)  ||  |\\_ \\|  |.'  '_  | |. (_ o _)  | \r\n|   _ _ '. .---. |  (_,_)___||  _( )_\\  ||  _( )_  ||  (_,_)___||  _( )_\\  |'   ( \\.-.||  (_,_)___| \r\n|  ( ' )  \\|   | '  \\   .---.| (_ o _)  |\\ (_ o._) /'  \\   .---.| (_ o _)  |' (`. _` /|'  \\   .---. \r\n| (_{;}_) ||   |  \\  `-'    /|  (_,_)\\  | \\ (_,_) /  \\  `-'    /|  (_,_)\\  || (_ (_) _) \\  `-'    / \r\n|  (_,_)  /|   |   \\       / |  |    |  |  \\     /    \\       / |  |    |  | \\ /  . \\ /  \\       /  \r\n/_______.' '---'    `'-..-'  '--'    '--'   `---`      `'-..-'  '--'    '--'  ``-'`-''    `'-..-'   \r\n                                                                                                    \r\n");
@@ -419,6 +410,7 @@ public class SaxParserMain {
         System.out.println("Nombre de pages :"+WikiHandler.nbwikipage);
         System.out.println("Norme pagerank :"+pagerank.getNorme());
         System.out.println("PageRank avec " + Constantes.kIterations + " itérations" + " en " + (System.currentTimeMillis()-chrono) + " ms");
+        System.out.println("Somme des coefficients du page rank : " + pageRankSum);
         System.out.println("Pour quitter saisir q ");
         System.out.println("Bonne recherche !");
         System.out.println("************************************************");
@@ -489,7 +481,4 @@ public class SaxParserMain {
             }
         }
     }
-
-
-
 }
