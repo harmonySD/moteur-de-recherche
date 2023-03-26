@@ -1,3 +1,10 @@
+
+/**
+ * Projet MAAIN : Moteur de recherche wikipédia
+ * @author JEANNE Tristan 51716850
+ * @author MABSOUT Rémi 51700745
+ * @author SIMON-DUCHATEL Harmony 71802495
+ */
 import org.xml.sax.SAXException;
 
 import maths.Matrice;
