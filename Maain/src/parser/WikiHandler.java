@@ -1,3 +1,4 @@
+//inspirer de https://www.baeldung.com/java-sax-parser
 package parser;
 
 import org.xml.sax.Attributes;
@@ -38,7 +39,6 @@ public class WikiHandler extends DefaultHandler{
     @Override
     public void startDocument() throws SAXException {
         website = new Wiki();
-        //File file = new File("/Users/harmonysimon-duchatel/M2/maain/maain_moteurrecherche_wikipedia/mywiki.xml");
         File file = new File("mywiki.xml");
         if (!file.exists()) {
             try {
@@ -46,11 +46,10 @@ public class WikiHandler extends DefaultHandler{
                 pw = new PrintWriter(new BufferedWriter(new FileWriter(file.getAbsoluteFile())));
                 pw.print("<corpus>\n");
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }else{
-            //le fichier existe il a donc deja etet paerser
+            //le fichier existe il a donc deja ete parser
             //on veut donc juste re remplir les structures ...
             again=true;
             website.setAllPageList(new ArrayList<>());
@@ -129,7 +128,6 @@ public class WikiHandler extends DefaultHandler{
                 }else{
                     try {
                         rempParam(website.getPageList(), pw);
-
                         //remettre a 0 la liste pour afficher que une fois chaque page dans le fichier
                         //et ne pas tout stocker
                         website.setPageList(new ArrayList<>());
@@ -172,7 +170,6 @@ public class WikiHandler extends DefaultHandler{
         Pattern p;
         Matcher m;
         p = Pattern.compile("aér*|avion");
-        // p = Pattern.compile("algo*");
         Iterator<Wiki.WikiPage> it = list.iterator();
         list.get(list.size()-1);
 
@@ -193,7 +190,6 @@ public class WikiHandler extends DefaultHandler{
                 s = s.replaceAll("^([a-z]|[A-Z])*","");
                 // Removes [[666...]].
                 s = s.replaceAll("\\[\\[(\\d*)\\]]","");
-                //s = s.replaceAll("\\{|}","");
                 //Removes all (  ).
                 s = s.replaceAll("\\(|\\)","");
                 s = s.replaceAll("=+.*=","");
@@ -202,8 +198,6 @@ public class WikiHandler extends DefaultHandler{
                 t = t.replaceAll("\\?|!|\\.|,|<|>|:|;|&|('')+|-|%|=|&|\\$|\\€|_|\\+|\\*|\\||`|»|«"," ");
                 // Removes all external links.
                 s = s.replaceAll("(<.*>)","");
-                //s = s.replaceAll("(\\{+(.*\\n)+}+)|(\\{+.[^\\{]*}+)","");
-                //s = s.replaceAll("(\\{+(.*\\n)+}+)","");
                 s = s.replaceAll("l’|l'|d’|d'|j'|s'","");
                 t = t.replaceAll("l’|l'|d’|d'|j'|s'","");
                 s = s.replaceAll(" ","");
@@ -222,12 +216,8 @@ public class WikiHandler extends DefaultHandler{
                     website.getAllPageList().add(new Wiki.WikiPage());
                     latestAllPage().setTitle(t);
                     latestAllPage().setText(s.toLowerCase());
-                    // Adds the page link to the global list in order to populate the CLI later.
-                    //this.pagesLinks.add(pageLinks);
-
                     // Write the cleaned page to file.
                     pw.println("<title>" + t + "</title>\n"  + "<text>" + s.toLowerCase() + "</text>");
-
                     nbwikipage++;
                 }
             }
