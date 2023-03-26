@@ -1,4 +1,3 @@
-//fortement inspirer de https://www.baeldung.com/java-sax-parser
 import org.xml.sax.SAXException;
 
 import maths.Matrice;
@@ -116,12 +115,9 @@ public class SaxParserMain {
                     HashMap<String,Double> tmp  = new HashMap<>();
                     tmp.put(entry2.getKey(),entry2.getValue());
                     m.put(word_search, tmp);
-                    // entry.getValue().remove(entry2.getKey());
-                    // liste_page_mot.remove(entry.getKey());
                 }
             }
         }
-        // return liste_page_mot;
         return m;
     }
 
@@ -161,8 +157,6 @@ public class SaxParserMain {
 
         //Pas possible de compresser avec le for du haut, vu que j'ai besoin de calculé les tf de la page
         // avec tout les mots de la requêtes
-       // System.out.println(tfPageCumule);
-        //System.out.println(pageRankUtilise);
         Map<String,Double> scorePage = new HashMap<>();
         for(String title : pagesWithAllWord){
             String defTitle = title.toLowerCase().trim();
@@ -194,16 +188,11 @@ public class SaxParserMain {
                 }
             }
         }
-        // for(Entry<String,Double> en: sortedScore.entrySet()){
-        //     System.out.println("titre : " + en.getKey());
-        //     System.out.println("score value : " +en.getValue());
-        // }
         return sortedScore;
     }
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException {
         //wiki
-        // File filewiki = new File("mywiki.xml");
         SAXParserFactory factory = SAXParserFactory.newInstance();
         System.setProperty("jdk.xml.totalEntitySizeLimit", String.valueOf(Integer.MAX_VALUE));
         SAXParser saxParser = factory.newSAXParser();
@@ -258,8 +247,6 @@ public class SaxParserMain {
         }else {
             if(args.length==0){
                 System.out.println(" Ou est le chemin du fichier a traiter ? 🤨");
-                // }else{
-                //     saxParser.parse(args[0], wikiHandler);
             }
         }
 
@@ -296,26 +283,14 @@ public class SaxParserMain {
         }
         CLI = new Matrice(wikiHandler.getWebsite().getAllPageList().size());
         for(List<Integer> links : pagesLinks){
-            // System.out.println("toto");
             List<Integer> tmp= new ArrayList<>(links);
             CLI.insertPage(tmp);
         }
-        /*File cli = new File("cli.txt");
-        cli.createNewFile();
-        PrintWriter cliPrint = new PrintWriter(new BufferedWriter(new FileWriter(cli)));
-        cliPrint.println(CLI.C);
-        cliPrint.println(CLI.L);
-        cliPrint.println(CLI.I);
-        cliPrint.close();*/
-
         //ralation mot page 
 
         Map<String,Map<String,Double>> relation_mp=new HashMap<>();
         for(int i=0; i<wikiHandler.getWebsite().getAllPageList().size(); i++ ){
-            //System.out.println(i);
             WikiPage page= wikiHandler.getWebsite().getAllPageList().get(i);
-            //System.out.println(page.title);
-            //System.out.println(page.getText());
             relation_mp.put(page.title, relation_mot_page(Dictionnaire, page));
         }
         //map avec pour chaque mot 
@@ -327,26 +302,6 @@ public class SaxParserMain {
         Map<String,Map<String, Double>> tfnorm = coeff_TF_normalise(normeVect, tf);
 
         Map<String,Map<String, Double>> list_page_mot_tf= supp_page_tf_faible(tf, tfnorm, Dictionnaire);
-        // System.out.println(list_page_mot_tf.size());
-
-
-        //Matrices
-
-        Matrice matrice;
-        matrice = new Matrice(4);
-        // List<Integer> page0 = Arrays.asList(35, 8, 50, 12);
-        List<Integer> page0 = Arrays.asList( 1, 3, 2);
-        matrice.insertPage(page0);
-
-        List<Integer> page1 = Arrays.asList(1,2);
-        matrice.insertPage(page1);
-
-
-        List<Integer> page2 = Arrays.asList();
-        matrice.insertPage(page2);
-
-        List<Integer> page3 = Arrays.asList(3);
-        matrice.insertPage(page3);
 
         //PAGE RANK 🥵 a calculer que si again false
         // System.out.println("Début du Page Rank");
@@ -362,7 +317,6 @@ public class SaxParserMain {
                 piZero.insertValue(unsurn);
             }
 
-            // System.out.println("norme piO"+piZero.getNorme());
             //calcul pagerank (produit matrice vecteur)
             pagerank=piZero;
             for(int k = 0; k<Constantes.kIterations; k++){
@@ -391,8 +345,7 @@ public class SaxParserMain {
                 e.printStackTrace();
             }
         }
-        // System.out.println("norme pagerank "+pagerank.getNorme());
-        // System.out.println("PageRank avec " + Constantes.kIterations + " itérations" + " en " + (System.currentTimeMillis()-chrono) + " ms");
+
         File pageRankValues = new File("pageRankValues.txt");
         pageRankValues.createNewFile();
         PrintWriter pageRankPrint = new PrintWriter(new BufferedWriter(new FileWriter(pageRankValues)));
@@ -441,8 +394,6 @@ public class SaxParserMain {
                         //le mot du tableau relation est contenu dans la requete
                         for(Entry<String, Double> entry2 : entry.getValue().entrySet()){
                             if(r.contains(entry2.getKey())){
-                            //     // System.out.println(entry2.getKey());
-                            //     pagescontainswords.put(entry.getKey(),entry.getValue());
                                 if (pagevalue.containsKey(entry.getKey())) {
                                     int value = pagevalue.get(entry.getKey());
                                     value++;
@@ -453,17 +404,6 @@ public class SaxParserMain {
                             }
                         }
                     }
-                    //mettre dans la liste que les pages qui sont dans chaque entry 
-                    // for(Entry<String, Map<String, Double>> entry: pagescontainswords.entrySet()){
-                    //     if (pagevalue.containsKey(entry.getKey())) {
-                    //         System.out.println("ici");
-                    //         int value = pagevalue.get(entry.getKey());
-                    //         value++;
-                    //         pagevalue.replace(entry.getKey(), value);
-                    //     } else {
-                    //         pagevalue.put(entry.getKey(), 1);
-                    //     }
-                    // }
                     //verif si la value de pagevalue == nb de mot de requete
                     int nbMotRequete=r.size();
                     for(Entry<String,Integer> entry: pagevalue.entrySet()){
@@ -474,7 +414,7 @@ public class SaxParserMain {
                     //scoring
                     
                     Map<String, Double> sortedScore=scoring(r,pagesWithAllWord,tfnorm,pagerank);
-                    System.out.println(sortedScore.size()+" resultats trouver");
+                    System.out.println(sortedScore.size()+" résultats trouvés");
                     Iterator<Entry<String, Double>> iterator = sortedScore.entrySet().iterator();
                     int i=0;
                     while (iterator.hasNext() && i<10){
